@@ -31,5 +31,5 @@ float hueMapped = mod(hue + paramFloat1, 1.0); //rotate and map hue to 0,1 range
 ```
 
 
-<img width="400px" src="examples/original.jpg" /> <img width="400px" src="examples/1%20Hue%20Shift.jpg" />
+<img width="400px" src="examples/Original.jpg" /> <img width="400px" src="examples/1%20Hue%20Shift.jpg" />
 
