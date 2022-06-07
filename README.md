@@ -1,4 +1,5 @@
-# Creative_Image_Processing_Android
+# Glitchio - Interactive image processing for Android
+
 
 What is this app for?
 GlitchIO is an app for image manipulation for android devices which allows users to transform
