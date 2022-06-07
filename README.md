@@ -45,14 +45,14 @@ hueMapped = hueMapped / 2.0 + 0.5; // convert hue to 0,1 range
 ```c++
 float hueMapped = mod(hue * paramFloat1 * 10.0, 1.0); // multiply hue by a value
 ```
-
+<img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/3%20Hue%20Distort.jpg" />
 
 ### Value Shift
 The same transformations can be applied to the value parameter of each pixel.
 ```c++
 float valueMapped = mod(value + paramFloat1, 1.0); //rotate and map value to 0,1 range
 ```
-
+<img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/4%20Value%20Shift.jpg" />
 
 ## Distortion Effects
 - The second set of effects is labeled Distort. The idea behind these effects is to create distorted
@@ -73,6 +73,8 @@ if(currentY > y1 && currentY < y2){ // draw in a rectangle
 
  pixelColour = colour1 * (1.0-interpolate) + colour2 * interpolate
  ```
+ <img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/6%20Interpolate.jpg" />```
+ 
  
  ### Expand – This effect is achieved by copying pixel values vertically.
  
@@ -86,6 +88,9 @@ else{
  colour = texture2D(u_Texture, vec2(currentX, currentY));
  }
 ```
+ <img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/7%20Expland.jpg" />```
+
+
 
 ### Wave - An effect that makes use of a wave function to change the position of pixels.
 
@@ -96,12 +101,15 @@ float xPos = currentX;
 float yPos = currentY + cos(currentX * freq * PI * 2.0)*amp; // Modify the Y position
 vec3 colour = texture2D(u_Texture, vec2(xPos, yPos)); // Take new value from texture
 ```
+ <img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/8%20Wave.jpg" />```
+
 
 ### Random distort - The same can be done with a noise which disperses pixel randomly. This
 creates a fluid-like structure. The noise function used takes 2 parameters – the coordinates of
 the image and returns an interpolated random value for these coordinates. The size of the
 smoothing can be controlled as well as the amount of displacement. This method for generation
 noise is described in detail in The Book of Shaders.
+
 ```c++
 float amt = paramFloat1; // Set the amount of distortion
 float size = paramFloat2; // Set the amount of smoothing in the noise
@@ -109,6 +117,8 @@ float xPos = currentX + noise(xy * size); // Calculate new x position
 float yPos = currentY + noise(xy * size); // Calculate new y position
 vec3 colour = texture2D(u_Texture, vec2(xPos, yPos)); // Draw the new pixel value
 ```
+ <img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/9%20Random%20Distort.jpg" />```
+
 
 
 
