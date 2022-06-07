@@ -29,4 +29,7 @@ Hue Shift
 ```c++
 float hueMapped = mod(hue + paramFloat1, 1.0); //rotate and map hue to 0,1 range
 ```
-[https://github.com/VeselinH/Glitchio_Interactive_Image_Processing_for_Android/blob/master/examples/1%20Hue%20Shift.jpg?raw=true]
+
+
+[<img alt="alt_text" width="40px" src="examples/1%20Hue%20Shift.jpg" />]
+
