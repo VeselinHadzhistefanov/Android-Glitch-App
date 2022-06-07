@@ -16,8 +16,16 @@ The effects designed for the app fall into three general categories:
 - effects that displace pixels 
 - advanced effects that involve iteration. 
 
-Colour effects make changes to the colour space in the image. This can be done by converting
+### Colour
+- Colour effects make changes to the colour space in the image. This can be done by converting
 the RGB values into hue, saturation and value parameters. Transforming these values can
 create effects like shifting the hue of the image or focusing on a certain set of colours. 
 The variables labeled paramFloat1, paramFloat2, etc. correspond to parameters controlled by the user 
 while the variables hue and hueMapped correspond to pixel values taken from the input image.
+
+
+Hue Shift
+
+```c++
+float hueMapped = mod(hue + paramFloat1, 1.0); //rotate and map hue to 0,1 range
+```
