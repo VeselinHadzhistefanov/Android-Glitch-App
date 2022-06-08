@@ -58,7 +58,7 @@ The same transformations can be applied to the value parameter of each pixel.
 ```c++
 float valueMapped = mod(value + paramFloat1, 1.0); //rotate and map value to 0,1 range
 ```
-<img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/4%20Value%20Shift.jpg" />
+<img width="300px" src="examples/Original.jpg" />  &emsp; <img width="300px" src="examples/4%20Value%20Shift.jpg" />
 
 ### Distortion Effects
 - Create distorted images by transforming pixel locations according to some rules.
@@ -75,7 +75,7 @@ if(currentY > y1 && currentY < y2){ // draw in a rectangle
 
  pixelColour = colour1 * (1.0-interpolate) + colour2 * interpolate
  ```
- <img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/6%20Interpolate.jpg" />
+ <img width="300px" src="examples/Original.jpg" />  &emsp; <img width="300px" src="examples/6%20Interpolate.jpg" />
  
  
  
@@ -91,7 +91,7 @@ else{
  colour = texture2D(u_Texture, vec2(currentX, currentY));
  }
 ```
- <img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/7%20Expland.jpg" />
+ <img width="300px" src="examples/Original.jpg" />  &emsp; <img width="300px" src="examples/7%20Expland.jpg" />
 
 
 
@@ -104,7 +104,7 @@ float xPos = currentX;
 float yPos = currentY + cos(currentX * freq * PI * 2.0)*amp; // Modify the Y position
 vec3 colour = texture2D(u_Texture, vec2(xPos, yPos)); // Take new value from texture
 ```
- <img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/8%20Wave.jpg" />
+ <img width="300px" src="examples/Original.jpg" />  &emsp; <img width="300px" src="examples/8%20Wave.jpg" />
 
 
 #### Random distort - Disperses pixel randomly. The noise function used takes 2 parameters – the x and y coordinates of
@@ -117,7 +117,7 @@ float xPos = currentX + noise(xy * size); // Calculate new x position
 float yPos = currentY + noise(xy * size); // Calculate new y position
 vec3 colour = texture2D(u_Texture, vec2(xPos, yPos)); // Draw the new pixel value
 ```
- <img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/9%20Random%20Distort.jpg" />```
+ <img width="300px" src="examples/Original.jpg" />  &emsp; <img width="300px" src="examples/9%20Random%20Distort.jpg" />```
 
 
 
