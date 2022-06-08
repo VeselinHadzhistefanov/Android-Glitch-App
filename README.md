@@ -18,9 +18,9 @@ images or add subtle effects to make slight changes to an image.
 ## Shader Effects
 
 The effects designed for the app fall into three general categories: 
-- effects that create changes in colour, 
+- effects that create changes in colour
 - effects that displace pixels 
-- advanced effects that involve iteration. 
+- advanced effects like pixel sorting
 
 ## Colour
 - Colour effects make changes to the colour space in the image. This can be done by converting
@@ -61,11 +61,7 @@ float valueMapped = mod(value + paramFloat1, 1.0); //rotate and map value to 0,1
 <img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/4%20Value%20Shift.jpg" />
 
 ## Distortion Effects
-- The idea behind these effects is to create distorted images by transforming 
-pixel locations according to some rules. One of the effects I explored
-generates a gradient, blending between two parts of the image. This effect is called interpolate
-as it interpolates between pixel values. This effect is controlled by two parameters which
-determine positioning of the gradient effect.
+- Create distorted images by transforming pixel locations according to some rules.
 
 ### Interpolate
 
