@@ -9,7 +9,13 @@ offer different ways of manipulating an image. Users can add a series of effects
 images or add subtle effects to make slight changes to an image.
 
 
-## Effects
+## Interface preview
+
+<img width="300px" src="examples/Screen1.jpg" /> <img width="300px" src="examples/Screen2.jpg" /> <img width="300px" src="examples/Screen3.jpg" /> 
+
+
+
+## Shader Effects
 
 The effects designed for the app fall into three general categories: 
 - effects that create changes in colour, 
