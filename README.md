@@ -11,7 +11,7 @@ images or add subtle effects to make slight changes to an image.
 
 ## Interface preview
 
-<img width="300px" src="examples/Screen1.jpg" /> <img width="300px" src="examples/Screen2.jpg" /> <img width="300px" src="examples/Screen3.jpg" /> 
+<img width="300px" src="examples/Screen1.png" /> <img width="300px" src="examples/Screen2.png" /> <img width="300px" src="examples/Screen3.png" /> 
 
 
 
