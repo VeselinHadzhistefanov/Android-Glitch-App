@@ -1,4 +1,4 @@
-# Glitchio - Interactive image processing for Android
+# Interactive image processing for Android
 
 
 ## What is this app for?
