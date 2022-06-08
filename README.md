@@ -35,7 +35,7 @@ while the variables hue and hueMapped correspond to pixel values taken from the 
 ```c++
 float hueMapped = mod(hue + paramFloat1, 1.0); //rotate and map hue to 0,1 range
 ```
-<img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/1%20Hue%20Shift.jpg" />
+<img width="300px" src="examples/Original.jpg" />  &emsp; <img width="300px" src="examples/1%20Hue%20Shift.jpg" />
 
 
 #### Hue Focus
@@ -44,14 +44,14 @@ hue = hue * 2.0 – 1.0; // map hue to 1,-1 range
 float hueMapped = sign(hue)*pow(hue, paramFloat1); // apply an exponent to the hue
 hueMapped = hueMapped / 2.0 + 0.5; // convert hue to 0,1 range
 ```
-<img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/2%20Hue%20Focus.jpg" />
+<img width="300px" src="examples/Original.jpg" />  &emsp; <img width="300px" src="examples/2%20Hue%20Focus.jpg" />
 
 
 #### Hue Distort
 ```c++
 float hueMapped = mod(hue * paramFloat1 * 10.0, 1.0); // multiply hue by a value
 ```
-<img width="300px" src="examples/Original.jpg" /> <img width="300px" src="examples/3%20Hue%20Distort.jpg" />
+<img width="300px" src="examples/Original.jpg" />  &emsp; <img width="300px" src="examples/3%20Hue%20Distort.jpg" />
 
 #### Value Shift
 The same transformations can be applied to the value parameter of each pixel.
