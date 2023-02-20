@@ -11,11 +11,15 @@ class Noise(context : Context) : Renderer(context) {
     private val vertexShaderPath = R.raw.vertex_shader
     private val fragmentShaderPath = R.raw.noise
 
+    init {
+        initProgram(vertexShaderPath, fragmentShaderPath)
+    }
 
     override fun render(inputBitmap: Bitmap, parameters : List<Float>): Bitmap {
 
+        GLES20.glGetError()
+
         // Initialize shaders and load texture
-        initProgram(vertexShaderPath, fragmentShaderPath)
         initTextures(inputBitmap)
 
         // Parameter uniforms
@@ -31,10 +35,10 @@ class Noise(context : Context) : Renderer(context) {
         GLES20.glFramebufferTexture2D(GLES30.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTextures[0], 0)
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
 
+        GLES20.glGetError()
 
         GLES20.glFinish()
         val outputBitmap = getOutputBitmap()
-        destroyContext()
         return outputBitmap
     }
 

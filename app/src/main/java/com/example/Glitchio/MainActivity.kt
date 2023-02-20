@@ -2,10 +2,13 @@ package com.example.Glitchio
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.util.Base64
 import android.util.Log
 import android.widget.ImageView
 import androidx.activity.ComponentActivity
@@ -27,14 +30,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.Glitchio.components.Category
+import com.example.Glitchio.components.Control
+import com.example.Glitchio.components.Effect
+import com.example.Glitchio.components.categories
+import com.example.Glitchio.renderer.HueShift
 import com.example.Glitchio.renderer.Renderer
 import com.example.Glitchio.ui.theme.*
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.math.sin
 
 
 // GL ============================
@@ -62,9 +72,13 @@ lateinit var inputBitmap : MutableState<Bitmap>
 lateinit var outputBitmap : MutableState<Bitmap>
 lateinit var previewBitmaps : MutableList<Bitmap>
 
+val effectCardHeight = 125.dp
+
 
 class MainActivity : ComponentActivity() {
 
+
+    // OnCreate - App UI
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -75,6 +89,8 @@ class MainActivity : ComponentActivity() {
         }
 
     }
+
+    // App UI
 
 
     @Composable
@@ -98,7 +114,9 @@ class MainActivity : ComponentActivity() {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
-        ) {}
+        ){}
+
+
 
         // App UI ========================================
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -111,14 +129,14 @@ class MainActivity : ComponentActivity() {
                     TextWithShadow(
                         text = "Welcome to GlitchIO! ",
                         textAlign = TextAlign.Center,
-                        color = MidFont,
+                        color = LightFont,
                         fontSize = 28.sp
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     TextWithShadow(
                         text = "Click here to select an image.",
                         textAlign = TextAlign.Center,
-                        color = DarkFont,
+                        color = LightFont,
                         fontSize = 14.sp
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -142,8 +160,8 @@ class MainActivity : ComponentActivity() {
                 Column(modifier = Modifier.fillMaxSize()) {
                     Spacer(modifier = Modifier.height(40.dp))
                     Box(modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1.0f)
+                        .fillMaxSize()
+                        .weight(1.0f)
                     ) {
                         Image(
                             bitmap = outputBitmap.value.asImageBitmap(),
@@ -154,31 +172,144 @@ class MainActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.height(160.dp))
                 }
 
+
+                // Bottom Layout ========================================
+
+                Box(
+                    Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .height(150.dp)
+                ) {
+                    AnimatedVisibility(visible = !showControls.value,
+                        enter = slideInVertically { height -> height * 2 } + fadeIn(),
+                        exit = slideOutVertically { height -> height * 2 } + fadeOut()) {
+
+                        Box(
+                            Modifier.fillMaxSize()
+                        ) {
+                            // Background
+                            Surface(
+                                modifier = Modifier.fillMaxSize(),
+                                color = DarkGray
+                            ) {}
+
+                            // Top edge
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(1.dp),
+                                color = MidDarkGray
+                            ) {}
+
+                            // Effects Row
+                            Box(
+                                Modifier
+                                    .offset(0.dp, -50.dp)
+                                    .align(Alignment.BottomStart)
+                                    .fillMaxWidth()
+                                    .height(80.dp)
+                            ) {
+                                EffectsRow()
+                            }
+
+                            // Categories Row
+                            Box(
+                                Modifier
+                                    .offset(0.dp, 0.dp)
+                                    .align(Alignment.BottomStart)
+                                    .fillMaxWidth()
+                                    .height(30.dp)
+                            ) {
+
+                                CategoriesRow()
+                            }
+
+
+                        }
+                    }
+                }
+
+                // Effect Controls
+                val height = currEffect.controls.size * 45 + 15
+                Box(
+                    Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .height(height.dp))
+
+                {
+                    AnimatedVisibility(visible = showControls.value,
+                        enter = slideInVertically { height -> height * 2 } + fadeIn(),
+                        exit = slideOutVertically { height -> height * 2 } + fadeOut()) {
+
+                        // Background
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .alpha(0.8f),
+                            color = DarkGray
+                        ) {}
+
+                        ControlsLayout(context)
+
+                        // Top edge
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(1.dp),
+                            color = MidDarkGray
+                        ) {}
+                    }
+                }
+
+
+                /*
                 // Effect selection / controls
-                Box(modifier = Modifier.align(Alignment.BottomCenter)
+                Box(modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(190.dp)
                 ){
                     AnimatedVisibility(visible = !showControls.value,
                         enter = slideInVertically { height -> height * 2 } + fadeIn(),
                         exit = slideOutVertically { height -> height * 2 } + fadeOut()) {
-                        Column() {
-                            EffectsRow()
-                            CategoriesRow()
+
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = DarkGray
+                        ){}
+
+                        Box(){
+                            //CategoriesRow()
                         }
+                        Box(){
+                            //EffectsRow()
+                        }
+
                     }
 
                     AnimatedVisibility(visible = showControls.value,
                         enter = slideInVertically { height -> height * 2 } + fadeIn(),
                         exit = slideOutVertically { height -> height * 2 } + fadeOut()) {
+
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = DarkGray
+                        ){}
+
                         ControlsLayout(context)
                     }
 
                 }
-
+                */
 
             }
+
         }
 
     }
+
 
     @Composable
     fun TopBar() {
@@ -187,6 +318,8 @@ class MainActivity : ComponentActivity() {
                 .fillMaxWidth()
                 .height(40.dp)
         ){
+            Surface(modifier = Modifier.fillMaxSize(), color = DarkGray) {
+            }
             Box(modifier = Modifier.align(Alignment.TopStart)
             ) {
                 OpenButton()
@@ -216,7 +349,7 @@ class MainActivity : ComponentActivity() {
                 onClick = { launcher.launch("image/*") },
                 shape = RoundedCornerShape(32.dp),
                 colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = if (showDefaultScreen.value) DarkPurple else Color(0x000F0E13),
+                    backgroundColor = if (showDefaultScreen.value) DarkGray else Color(0,0,0,0),
                 ),
                 modifier = Modifier
                     .fillMaxSize()
@@ -227,21 +360,44 @@ class MainActivity : ComponentActivity() {
                     text = if (showDefaultScreen.value) "Open Image" else "Open",
                     textAlign = TextAlign.Left,
                     fontSize = if (showDefaultScreen.value) 20.sp else 16.sp,
-                    color = MidFont
+                    fontWeight = FontWeight.Light,
+                    color = MidLightFont
                 )
                 imageUri?.let {
-                    inputBitmap.value = getBitmapFromUri(it)
-                    outputBitmap.value = inputBitmap.value
+                    val bitmapFromUri = getBitmapFromUri(it)
+                    val resizedBitmap = resizeBitmap(bitmapFromUri)
+
+                    inputBitmap.value = resizedBitmap
+                    outputBitmap.value = resizedBitmap
                     showDefaultScreen.value = false
                     renderPreviews()
                     inputImageUri = it
                     imageUri = null
-
                 }
             }
         }
 
     }
+    fun resizeBitmap(bitmap : Bitmap) : Bitmap{
+        var x = bitmap.width
+        var y = bitmap.height
+        val max = 500
+
+        if(x > y ){
+            x = x * max/y
+            y = max
+        }
+        else{
+            y = y * max/x
+            x = max
+        }
+
+        val newBitmap = Bitmap.createScaledBitmap(bitmap, x, y, false)
+
+        return newBitmap
+    }
+
+
 
 
     @Composable
@@ -265,7 +421,8 @@ class MainActivity : ComponentActivity() {
                 TextWithShadow(
                     text = "Save",
                     fontSize = 16.sp,
-                    color = MidFont
+                    color = MidLightFont,
+                    fontWeight = FontWeight.Light
                 )
 
             }
@@ -275,58 +432,14 @@ class MainActivity : ComponentActivity() {
     }
 
 
-    @Composable
-    fun EffectsRow() {
-        if(!showControls.value) {
-            renderPreviews()
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp)
-                .clipToBounds()
-        ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.2f), color = PurpleGrey40
-            ) {}
-            for (i in categories.indices) {
-                AnimatedVisibility(
-                    visible = categoryIdx.value == i,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-
-
-                    Row(
-                        modifier = Modifier
-                            .horizontalScroll(rememberScrollState())
-                    ) {
-
-                        for (k in 0 until categories[i].effects.size) {
-                            EffectCard(i, k)
-                        }
-
-
-                    }
-
-
-                }
-            }
-
-        }
-    }
 
     @Composable
     fun EffectCard(categoryIdx: Int, effectidx: Int) {
+        val size = 80.dp
 
         Box(modifier = Modifier
-            .width(110.dp)
-            .height(120.dp)
-            .padding(5.dp, 10.dp)
-            .shadow(elevation = 4.dp)
+            .width(size)
+            .height(size)
             .clickable {
                 effectIdx.value = effectidx
                 showControls.value = true
@@ -335,102 +448,140 @@ class MainActivity : ComponentActivity() {
                     parameters[i] = c.default
                 }
                 requestRender(parameters)
-
+                rendererCreated = false
             }) {
-            Surface(
-                color = PurpleGrey40,
-                modifier = Modifier
-                    .fillMaxSize()
 
-            ) {}
+            Surface(Modifier
+                .fillMaxSize(),
+            color = if (effectIdx.value == effectidx) MidGray else DarkGray) {}
 
             Image(
                 bitmap = previewBitmaps[effectidx].asImageBitmap(),
                 contentDescription = null,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(1.dp)
+                    .shadow(elevation = 4.dp),
                 contentScale = ContentScale.Crop
             )
 
             Box(
-                modifier = Modifier
+                Modifier
+                    .align(Alignment.BottomStart)
                     .fillMaxWidth()
-                    .height(20.dp)
-            ) {
-                Surface(
-                    color = DarkTint,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .alpha(0.5f)
-                ) {}
-
-                TextWithShadow(
-                    text = categories[categoryIdx].effects[effectidx].name,
-                    fontSize = 12.sp,
-                    color = LightFont,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(2.dp, 2.dp)
+                    .height(25.dp)) {
+                    TextWithShadow(
+                        text = categories[categoryIdx].effects[effectidx].name,
+                        fontSize = 14.sp,
+                        color = LightFont,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.ExtraLight,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(2.dp, 2.dp)
                 )
-
             }
+
 
         }
 
+    }
+
+    @Composable
+    fun EffectsRow() {
+        if(!showControls.value) {
+            renderPreviews()
+        }
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .clipToBounds()
+        ) {
+            Row(modifier = Modifier.horizontalScroll(rememberScrollState())
+            ) {
+                for (k in 0 until categories[categoryIdx.value].effects.size) {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    EffectCard(categoryIdx.value, k)
+                }
+            }
+        }
     }
 
 
     @Composable
     fun CategoriesRow() {
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp)
-                .shadow(1.dp)
+        Box(modifier = Modifier.fillMaxSize()
         ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.4f), color = PurpleGrey
-            ) {}
             Row() {
                 for (i in 0..categories.size - 1) {
 
-                    Box(modifier = Modifier.weight(1f)) {
+                    Spacer(modifier = Modifier.width(20.dp))
 
-                        if (categoryIdx.value == i) {
-                            Divider(
-                                color = LightFont, modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(3.dp)
-                                    .align(Alignment.BottomCenter)
-                            )
-                            Surface(modifier = Modifier.fillMaxSize().alpha(0.05f), color = LightFont, ){}
-                        }
-
-                        TextButton(
-                            onClick = { categoryIdx.value = i },
-                            shape = RectangleShape,
-                            modifier = Modifier
-                                .fillMaxSize()
+                    Box(Modifier.clickable { categoryIdx.value = i }) {
+                        TextWithShadow(
+                            text = categories[i].name,
+                            fontSize = 14.sp,
+                            color = if (categoryIdx.value == i) LightFont else MidFont,
+                            modifier = Modifier.offset(0.dp, -5.dp)
                         )
-                        {
-                            TextWithShadow(
-                                text = categories[i].name,
-                                fontSize = 15.sp,
-                                color = if (categoryIdx.value == i) LightFont else MidFont
-                            )
-
-                        }
-
                     }
+                    
+                }
+            }
 
+        }
+    }
+
+    var timeFrame : Double = 0.0
+    fun setRenderParameters(params: List<Float>, movementParams : List<Float> = arrayListOf<Float>()){
+        val handler: Handler = Handler()
+        val delay = 200L
+        handler.postDelayed(object : java.lang.Runnable {
+            override fun run() {
+                val newParams  = arrayListOf<Float>()
+                val magnitude = 0.1f
+
+                for (parameter in params){
+                    newParams.add(parameter + sin(timeFrame).toFloat() * magnitude)
+                }
+                timeFrame = (timeFrame+0.01)%(Math.PI*2)
+
+
+                requestRender(newParams)
+                handler.postDelayed(this, delay)
+            }
+        }, delay)
+    }
+
+
+
+    var rendererCreated = false
+    lateinit var rendererInstance : Renderer
+
+    fun requestRenderEffect(params : List<Float>) {
+
+        if (!rendererCreated){
+            val rendererClass = categories[categoryIdx.value].effects[effectIdx.value].renderer.java
+            rendererInstance = rendererClass.constructors.first().newInstance(this@MainActivity) as Renderer
+            rendererCreated = true
+        }
+
+
+        if(!isRendering) {
+            scope.launch {
+                withContext(Dispatchers.Default) {
+                    isRendering = true
+
+                    val renderedBitmap = rendererInstance.render(inputBitmap.value, params)
+
+                    withContext(Dispatchers.Main) {
+                        outputBitmap.value = renderedBitmap
+                        isRendering = false
+                    }
                 }
             }
         }
-
     }
+
 
     fun requestRender(params : List<Float>) {
 
@@ -450,8 +601,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
     }
+
+
+
+
 
     fun renderPreviews(){
         for (i in 0 until currCategory.effects.size) {
@@ -467,8 +621,7 @@ class MainActivity : ComponentActivity() {
             withContext(Dispatchers.Default) {
 
                 val rendererClass = categories[categoryIdx].effects[effectIdx].renderer.java
-                val renderer =
-                    rendererClass.constructors.first().newInstance(this@MainActivity) as Renderer
+                val renderer = rendererClass.constructors.first().newInstance(this@MainActivity) as Renderer
 
                 val renderedBitmap = renderer.render(inputBitmap.value, params)
 

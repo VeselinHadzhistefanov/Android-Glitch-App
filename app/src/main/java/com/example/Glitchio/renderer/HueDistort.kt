@@ -6,16 +6,18 @@ import android.opengl.GLES20
 import android.opengl.GLES30
 import com.example.Glitchio.R
 
-class HueDistort(context : Context) : Renderer(context) {
+class HueDistort(context: Context) : Renderer(context) {
 
     private val vertexShaderPath = R.raw.vertex_shader
     private val fragmentShaderPath = R.raw.hue_distort
 
+    init {
+        initProgram(vertexShaderPath, fragmentShaderPath)
+    }
 
-    override fun render(inputBitmap: Bitmap, parameters : List<Float>): Bitmap {
+    override fun render(inputBitmap: Bitmap, parameters: List<Float>): Bitmap {
 
         // Initialize shaders and load texture
-        initProgram(vertexShaderPath, fragmentShaderPath)
         initTextures(inputBitmap)
 
         // Parameter uniforms
@@ -28,13 +30,18 @@ class HueDistort(context : Context) : Renderer(context) {
 
         // Draw
         GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgram, "u_Texture"), 0)
-        GLES20.glFramebufferTexture2D(GLES30.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTextures[0], 0)
+        GLES20.glFramebufferTexture2D(
+            GLES30.GL_FRAMEBUFFER,
+            GLES20.GL_COLOR_ATTACHMENT0,
+            GLES20.GL_TEXTURE_2D,
+            mTextures[0],
+            0
+        )
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
 
 
         GLES20.glFinish()
         val outputBitmap = getOutputBitmap()
-        destroyContext()
         return outputBitmap
     }
 

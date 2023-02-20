@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.opengl.*
 import android.util.Log
+import com.example.Glitchio.R
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.ByteBuffer
@@ -39,7 +40,6 @@ abstract class Renderer(val context: Context) {
     abstract fun render(inputBitmap: Bitmap, parameters : List<Float>) : Bitmap
 
     fun initProgram(vertexShaderPath: Int, fragmentShaderPath: Int) {
-
         // Create EGL context
         createContext()
         // Create an object to hold information from rendering
@@ -58,20 +58,23 @@ abstract class Renderer(val context: Context) {
         mVertexPositionHandle = GLES20.glGetAttribLocation(mProgram, "a_Position")
         mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgram, "a_TexCoordinate")
 
+
         // Allocate vertex position data
         mVertexBuffer.position(TRIANGLE_VERTICES_DATA_POS_OFFSET)
         GLES20.glVertexAttribPointer(mVertexPositionHandle, 3, GLES20.GL_FLOAT, false,
             TRIANGLE_VERTICES_DATA_STRIDE_BYTES, mVertexBuffer)
+        getGLError(9)
         GLES20.glEnableVertexAttribArray(mVertexPositionHandle)
+        getGLError(10)
 
         // Allocate texture UV data
         mVertexBuffer.position(TRIANGLE_VERTICES_DATA_UV_OFFSET)
         GLES20.glVertexAttribPointer(mTextureCoordinateHandle, 3, GLES20.GL_FLOAT, false,
             TRIANGLE_VERTICES_DATA_STRIDE_BYTES, mVertexBuffer)
+        getGLError(11)
+
         GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle)
-
-
-
+        getGLError(12)
     }
 
     private fun createContext() {
@@ -132,6 +135,8 @@ abstract class Renderer(val context: Context) {
         val shader = GLES20.glCreateShader(shaderType)
         GLES20.glShaderSource(shader, shaderCode)
         GLES20.glCompileShader(shader)
+
+
         return shader
     }
 
@@ -169,6 +174,7 @@ abstract class Renderer(val context: Context) {
         // Set viewport
         GLES20.glViewport(0, 0, width, height)
 
+
     }
 
 
@@ -205,8 +211,21 @@ abstract class Renderer(val context: Context) {
     }
 
 
-    fun getGLError(msg : String){
+    fun getGLError(msg : String = ""){
         Log.i("GL ERROR: $msg ", GLES20.glGetError().toString())
+        GLES20.glGetError()
+    }
+    fun getGLError(msg : Int){
+        getGLError(msg.toString())
+    }
+
+    public class Timer(){
+        var startTime = System.currentTimeMillis()
+        fun print(msg : String = ""){
+            val t = System.currentTimeMillis() - startTime
+            Log.i("$msg ", t.toString())
+            startTime = System.currentTimeMillis()
+        }
     }
 
 

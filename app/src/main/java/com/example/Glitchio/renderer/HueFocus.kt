@@ -6,16 +6,18 @@ import android.opengl.GLES20
 import android.opengl.GLES30
 import com.example.Glitchio.R
 
-class HueFocus(context : Context) : Renderer(context) {
+class HueFocus(context: Context) : Renderer(context) {
 
     private val vertexShaderPath = R.raw.vertex_shader
     private val fragmentShaderPath = R.raw.hue_focus
 
+    init {
+        initProgram(vertexShaderPath, fragmentShaderPath)
+    }
 
-    override fun render(inputBitmap: Bitmap, parameters : List<Float>): Bitmap {
+    override fun render(inputBitmap: Bitmap, parameters: List<Float>): Bitmap {
 
         // Initialize shaders and load texture
-        initProgram(vertexShaderPath, fragmentShaderPath)
         initTextures(inputBitmap)
 
         // Parameter uniforms
@@ -24,18 +26,23 @@ class HueFocus(context : Context) : Renderer(context) {
 
 
         // Set uniforms
-        GLES20.glUniform1f(paramFloat1Handle, (parameters[0] + 0.5f)%1f)
+        GLES20.glUniform1f(paramFloat1Handle, (parameters[0] + 0.5f) % 1f)
         GLES20.glUniform1f(paramFloat2Handle, (1f - parameters[1]))
 
         // Draw
         GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgram, "u_Texture"), 0)
-        GLES20.glFramebufferTexture2D(GLES30.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTextures[0], 0)
+        GLES20.glFramebufferTexture2D(
+            GLES30.GL_FRAMEBUFFER,
+            GLES20.GL_COLOR_ATTACHMENT0,
+            GLES20.GL_TEXTURE_2D,
+            mTextures[0],
+            0
+        )
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
 
 
         GLES20.glFinish()
         val outputBitmap = getOutputBitmap()
-        destroyContext()
         return outputBitmap
     }
 

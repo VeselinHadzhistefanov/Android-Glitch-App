@@ -11,11 +11,13 @@ class RandomDistort(context : Context) : Renderer(context) {
     private val vertexShaderPath = R.raw.vertex_shader
     private val fragmentShaderPath = R.raw.random_distort
 
+    init {
+        initProgram(vertexShaderPath, fragmentShaderPath)
+    }
 
     override fun render(inputBitmap: Bitmap, parameters : List<Float>): Bitmap {
 
         // Initialize shaders and load texture
-        initProgram(vertexShaderPath, fragmentShaderPath)
         initTextures(inputBitmap)
 
         // Parameter uniforms
@@ -34,7 +36,6 @@ class RandomDistort(context : Context) : Renderer(context) {
 
         GLES20.glFinish()
         val outputBitmap = getOutputBitmap()
-        destroyContext()
         return outputBitmap
     }
 

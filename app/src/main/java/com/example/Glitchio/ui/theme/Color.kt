@@ -2,20 +2,21 @@ package com.example.Glitchio.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val LightGray = Color(0xFFF1F1F1)
+val MidLightGray = Color(0xFFC5C5C5)
+val LightGrayVariant = Color(0xFFE2E2E2)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
+val MidGray = Color(0xFF929292)
+val MidDarkGray = Color(0xFF444444)
 
-val DarkPurple = Color(0xFF271644)
-val PurpleGrey = Color(0xFF584F6D)
+val LightFont = Color(0xFFDFDFDF)
+val MidLightFont = Color(0xFFB9B9B9)
+val MidFont = Color(0xFF585858)
+val DarkFont = Color(0xFF6D6D6D)
 
-val LightFont = Color(0xFFC2BDDA)
-val MidFont = Color(0xFFA39FB8)
-val DarkFont = Color(0xFF7E789B)
-val PurpleFont = Color(0xFF623EB9)
+val DarkGray = Color(0xFF1C1C1C)
 
 
-val DarkTint = Color(0xFF0F0E13)
+
+
+val DarkTint = Color(0xFF141414)

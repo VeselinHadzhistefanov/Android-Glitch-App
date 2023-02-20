@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.opengl.GLES20
 import android.opengl.GLES30
+import android.util.Log
 import com.example.Glitchio.R
 
 class Sort(context : Context) : Renderer(context){
@@ -11,12 +12,16 @@ class Sort(context : Context) : Renderer(context){
     private val vertexShaderPath = R.raw.vertex_shader
     private val fragmentShaderPath = R.raw.sort
 
-
+    init {
+        initProgram(vertexShaderPath, fragmentShaderPath)
+    }
 
     override fun render(inputBitmap: Bitmap, parameters : List<Float>): Bitmap {
 
+        val t = Timer()
+        t.print("Start")
+
         // Initialize shaders and load texture
-        initProgram(vertexShaderPath, fragmentShaderPath)
         initTextures(inputBitmap)
 
         // Parameter uniforms
@@ -38,6 +43,7 @@ class Sort(context : Context) : Renderer(context){
         GLES20.glUniform1f(paramFloat2Handle, parameters[1])
         GLES20.glUniform2f(iResolutionHandle, width.toFloat(), height.toFloat())
 
+        t.print("Init")
         // Sort pixels
         for (i in 0..width/2){
 
@@ -53,10 +59,11 @@ class Sort(context : Context) : Renderer(context){
             GLES20.glFramebufferTexture2D(GLES30.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTextures[0], 0)
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
         }
+        t.print("Draw")
 
         GLES20.glFinish()
         val outputBitmap = getOutputBitmap()
-        destroyContext()
+        t.print("Finish")
         return outputBitmap
     }
 
