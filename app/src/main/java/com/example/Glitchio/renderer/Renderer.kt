@@ -37,7 +37,7 @@ abstract class Renderer(val context: Context) {
     )
 
     // Render function implemented by each effect
-    abstract fun render(inputBitmap: Bitmap, parameters : List<Float>) : Bitmap
+    abstract fun render(inputBitmap: Bitmap, parameters : Array<Float>) : Bitmap
 
     fun initProgram(vertexShaderPath: Int, fragmentShaderPath: Int) {
         // Create EGL context

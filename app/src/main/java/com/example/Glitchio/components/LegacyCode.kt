@@ -9,11 +9,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Surface
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,13 +23,12 @@ import androidx.compose.ui.unit.sp
 import com.example.Glitchio.*
 import com.example.Glitchio.ui.theme.LightFont
 import com.example.Glitchio.ui.theme.MidDarkGray
-import com.example.Glitchio.ui.theme.MidFont
 import com.example.Glitchio.ui.theme.MidGray
 
 class LegacyCode {
 }
 
-
+/*
 @Composable
 fun CustomSlider(context : Context, parameterIdx : Int, isHue : Boolean = true, isCircular : Boolean, min : Float = 0f, max : Float = 1f){
     val width = 300.dp
@@ -54,7 +49,7 @@ fun CustomSlider(context : Context, parameterIdx : Int, isHue : Boolean = true, 
         }
 
         val activity = context as MainActivity
-        activity.effectController.requestRender(parameters)
+        activity.renderController.requestRender(parameters)
 
         delta
     })
@@ -144,3 +139,4 @@ fun CustomSlider(context : Context, parameterIdx : Int, isHue : Boolean = true, 
 
 }
 
+*/

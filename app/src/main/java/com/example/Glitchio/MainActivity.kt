@@ -2,13 +2,11 @@ package com.example.Glitchio
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
-import android.util.Base64
 import android.util.Log
 import android.widget.ImageView
 import androidx.activity.ComponentActivity
@@ -38,54 +36,46 @@ import com.example.Glitchio.components.Category
 import com.example.Glitchio.components.Control
 import com.example.Glitchio.components.Effect
 import com.example.Glitchio.components.categories
-import com.example.Glitchio.renderer.HueShift
-import com.example.Glitchio.renderer.Renderer
 import com.example.Glitchio.ui.theme.*
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.math.sin
 
-
-// GL ============================
-lateinit var parameters : MutableList<Float>
-
 // Coroutines =====================================
-val scope = CoroutineScope(Job() + Dispatchers.Main)
+//val scope = CoroutineScope(Job() + Dispatchers.Main)
 
 // UI =====================================
-lateinit var categoryIdx : MutableState<Int>
-lateinit var effectIdx : MutableState<Int>
-lateinit var controlIdx : MutableState<Int>
-lateinit var showControls : MutableState<Boolean>
-lateinit var showDefaultScreen : MutableState<Boolean>
-var isRendering  = false
+lateinit var categoryIdx: MutableState<Int>
+lateinit var effectIdx: MutableState<Int>
+lateinit var controlIdx: MutableState<Int>
+lateinit var showControls: MutableState<Boolean>
+lateinit var showDefaultScreen: MutableState<Boolean>
+var isRendering = false
 
-val currCategory : Category get() = categories[categoryIdx.value]
-val currEffect : Effect get() = currCategory.effects[effectIdx.value]
-val currControl : Control get() = if (controlIdx.value < currEffect.controls.size) currEffect.controls[controlIdx.value] else currEffect.controls[0]
+val currCategory: Category get() = categories[categoryIdx.value]
+val currEffect: Effect get() = currCategory.effects[effectIdx.value]
+val currControl: Control get() = if (controlIdx.value < currEffect.controls.size) currEffect.controls[controlIdx.value] else currEffect.controls[0]
 
-var inputImageUri : Uri? = null
+var inputImageUri: Uri? = null
 
-// Bitmaps =====================================
-lateinit var inputBitmap : MutableState<Bitmap>
-lateinit var outputBitmap : MutableState<Bitmap>
-lateinit var previewBitmaps : MutableList<Bitmap>
 
 val effectCardHeight = 125.dp
 
 
-
 class MainActivity : ComponentActivity() {
 
-    lateinit var effectController : EffectController
+    var renderController: RenderController = RenderController(this)
+    var animationController: AnimationController = AnimationController(this)
+    var imageController: ImageController = ImageController(this)
+    var parameterController : ParameterController = ParameterController(this)
+
+    var effectControls : EffectControls = EffectControls(this)
 
 
     // OnCreate - App UI
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        effectController = EffectController(this)
 
         setContent {
             ComposeBasicAppTheme {
@@ -96,8 +86,6 @@ class MainActivity : ComponentActivity() {
     }
 
     // App UI
-
-
     @Composable
     fun AppUI(context: Context) {
 
@@ -106,10 +94,11 @@ class MainActivity : ComponentActivity() {
         controlIdx = remember { mutableStateOf(0) }
 
         val defaultBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-        inputBitmap = remember { mutableStateOf(defaultBitmap) }
-        outputBitmap = remember { mutableStateOf(defaultBitmap) }
-        previewBitmaps = remember { mutableStateListOf(*Array(10){defaultBitmap})}
-        parameters = remember { mutableStateListOf(*Array(4){0f})}
+        imageController.inputBitmap = remember { mutableStateOf(defaultBitmap) }
+        imageController.outputBitmap = remember { mutableStateOf(defaultBitmap) }
+        imageController.previewBitmaps = remember { mutableStateListOf(*Array(10) { defaultBitmap }) }
+
+        parameterController.parameters = remember { mutableStateListOf(*Array(4) { 0f }) }
 
         showControls = remember { mutableStateOf(false) }
         showDefaultScreen = remember { mutableStateOf(true) }
@@ -119,14 +108,13 @@ class MainActivity : ComponentActivity() {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
-        ){}
-
+        ) {}
 
 
         // App UI ========================================
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 
-            if(showDefaultScreen.value) {
+            if (showDefaultScreen.value) {
 
                 // Welcome screen
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -145,31 +133,33 @@ class MainActivity : ComponentActivity() {
                         fontSize = 14.sp
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Box(modifier = Modifier.size(180.dp, 45.dp)
+                    Box(
+                        modifier = Modifier.size(180.dp, 45.dp)
                     ) {
                         OpenButton()
                     }
                 }
-            }
-            else {
+            } else {
 
                 // Top bar
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.TopCenter)
-                ){
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                ) {
                     TopBar()
                 }
 
                 // Display Area
                 Column(modifier = Modifier.fillMaxSize()) {
                     Spacer(modifier = Modifier.height(40.dp))
-                    Box(modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1.0f)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1.0f)
                     ) {
                         Image(
-                            bitmap = outputBitmap.value.asImageBitmap(),
+                            bitmap = imageController.outputBitmap.value.asImageBitmap(),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize()
                         )
@@ -241,7 +231,8 @@ class MainActivity : ComponentActivity() {
                     Modifier
                         .align(Alignment.BottomStart)
                         .fillMaxWidth()
-                        .height(height.dp))
+                        .height(height.dp)
+                )
 
                 {
                     AnimatedVisibility(visible = showControls.value,
@@ -256,7 +247,7 @@ class MainActivity : ComponentActivity() {
                             color = DarkGray
                         ) {}
 
-                        ControlsLayout(context)
+                        effectControls.ControlsLayout(context)
 
                         // Top edge
                         Surface(
@@ -268,46 +259,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-
-                /*
-                // Effect selection / controls
-                Box(modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .height(190.dp)
-                ){
-                    AnimatedVisibility(visible = !showControls.value,
-                        enter = slideInVertically { height -> height * 2 } + fadeIn(),
-                        exit = slideOutVertically { height -> height * 2 } + fadeOut()) {
-
-                        Surface(
-                            modifier = Modifier.fillMaxSize(),
-                            color = DarkGray
-                        ){}
-
-                        Box(){
-                            //CategoriesRow()
-                        }
-                        Box(){
-                            //EffectsRow()
-                        }
-
-                    }
-
-                    AnimatedVisibility(visible = showControls.value,
-                        enter = slideInVertically { height -> height * 2 } + fadeIn(),
-                        exit = slideOutVertically { height -> height * 2 } + fadeOut()) {
-
-                        Surface(
-                            modifier = Modifier.fillMaxSize(),
-                            color = DarkGray
-                        ){}
-
-                        ControlsLayout(context)
-                    }
-
-                }
-                */
 
             }
 
@@ -322,14 +273,16 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(40.dp)
-        ){
+        ) {
             Surface(modifier = Modifier.fillMaxSize(), color = DarkGray) {
             }
-            Box(modifier = Modifier.align(Alignment.TopStart)
+            Box(
+                modifier = Modifier.align(Alignment.TopStart)
             ) {
                 OpenButton()
             }
-            Box(modifier = Modifier.align(Alignment.TopEnd)
+            Box(
+                modifier = Modifier.align(Alignment.TopEnd)
             ) {
                 SaveButton()
             }
@@ -354,7 +307,7 @@ class MainActivity : ComponentActivity() {
                 onClick = { launcher.launch("image/*") },
                 shape = RoundedCornerShape(32.dp),
                 colors = ButtonDefaults.textButtonColors(
-                    backgroundColor = if (showDefaultScreen.value) DarkGray else Color(0,0,0,0),
+                    backgroundColor = if (showDefaultScreen.value) DarkGray else Color(0, 0, 0, 0),
                 ),
                 modifier = Modifier
                     .fillMaxSize()
@@ -372,10 +325,10 @@ class MainActivity : ComponentActivity() {
                     val bitmapFromUri = getBitmapFromUri(it)
                     val resizedBitmap = resizeBitmap(bitmapFromUri)
 
-                    inputBitmap.value = resizedBitmap
-                    outputBitmap.value = resizedBitmap
+                    imageController.inputBitmap.value = resizedBitmap
+                    imageController.outputBitmap.value = resizedBitmap
                     showDefaultScreen.value = false
-                    effectController.renderPreviews()
+                    renderController.renderPreviews()
                     inputImageUri = it
                     imageUri = null
                 }
@@ -383,26 +336,6 @@ class MainActivity : ComponentActivity() {
         }
 
     }
-    fun resizeBitmap(bitmap : Bitmap) : Bitmap{
-        var x = bitmap.width
-        var y = bitmap.height
-        val max = 500
-
-        if(x > y ){
-            x = x * max/y
-            y = max
-        }
-        else{
-            y = y * max/x
-            x = max
-        }
-
-        val newBitmap = Bitmap.createScaledBitmap(bitmap, x, y, false)
-
-        return newBitmap
-    }
-
-
 
 
     @Composable
@@ -415,7 +348,7 @@ class MainActivity : ComponentActivity() {
             TextButton(
                 onClick = {
                     saveBitmap(inputImageUri!!)
-                          },
+                },
                 shape = RectangleShape,
                 modifier = Modifier
                     .fillMaxSize()
@@ -437,7 +370,6 @@ class MainActivity : ComponentActivity() {
     }
 
 
-
     @Composable
     fun EffectCard(categoryIdx: Int, effectidx: Int) {
         val size = 80.dp
@@ -450,18 +382,20 @@ class MainActivity : ComponentActivity() {
                 showControls.value = true
                 for (i in currEffect.controls.indices) {
                     val c = currEffect.controls[i]
-                    parameters[i] = c.default
+                    parameterController.parameters[i] = c.default
                 }
-                effectController.requestRender(parameters)
-                effectController.rendererCreated = false
+                renderController.requestRender(parameterController.parameters.toTypedArray())
+                renderController.rendererCreated = false
             }) {
 
-            Surface(Modifier
-                .fillMaxSize(),
-            color = if (effectIdx.value == effectidx) MidGray else DarkGray) {}
+            Surface(
+                Modifier
+                    .fillMaxSize(),
+                color = if (effectIdx.value == effectidx) MidGray else DarkGray
+            ) {}
 
             Image(
-                bitmap = previewBitmaps[effectidx].asImageBitmap(),
+                bitmap = imageController.previewBitmaps[effectidx].asImageBitmap(),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
@@ -474,16 +408,17 @@ class MainActivity : ComponentActivity() {
                 Modifier
                     .align(Alignment.BottomStart)
                     .fillMaxWidth()
-                    .height(25.dp)) {
-                    TextWithShadow(
-                        text = categories[categoryIdx].effects[effectidx].name,
-                        fontSize = 14.sp,
-                        color = LightFont,
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.ExtraLight,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(2.dp, 2.dp)
+                    .height(25.dp)
+            ) {
+                TextWithShadow(
+                    text = categories[categoryIdx].effects[effectidx].name,
+                    fontSize = 14.sp,
+                    color = LightFont,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.ExtraLight,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(2.dp, 2.dp)
                 )
             }
 
@@ -494,14 +429,16 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun EffectsRow() {
-        if(!showControls.value) {
-            effectController.renderPreviews()
+        if (!showControls.value) {
+            renderController.renderPreviews()
         }
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .clipToBounds()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clipToBounds()
         ) {
-            Row(modifier = Modifier.horizontalScroll(rememberScrollState())
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState())
             ) {
                 for (k in 0 until categories[categoryIdx.value].effects.size) {
                     Spacer(modifier = Modifier.width(10.dp))
@@ -514,7 +451,8 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun CategoriesRow() {
-        Box(modifier = Modifier.fillMaxSize()
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
             Row() {
                 for (i in 0..categories.size - 1) {
@@ -529,45 +467,22 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.offset(0.dp, -5.dp)
                         )
                     }
-                    
+
                 }
             }
 
         }
     }
 
-    var timeFrame : Double = 0.0
-    fun setRenderParameters(params: List<Float>, movementParams : List<Float> = arrayListOf<Float>()){
-        val handler: Handler = Handler()
-        val delay = 200L
-        handler.postDelayed(object : java.lang.Runnable {
-            override fun run() {
-                val newParams  = arrayListOf<Float>()
-                val magnitude = 0.1f
 
-                for (parameter in params){
-                    newParams.add(parameter + sin(timeFrame).toFloat() * magnitude)
-                }
-                timeFrame = (timeFrame+0.01)%(Math.PI*2)
-
-
-                effectController.requestRender(newParams)
-                handler.postDelayed(this, delay)
-            }
-        }, delay)
-    }
-
-
-
-
-    fun getBitmapFromUri(uri : Uri) : Bitmap{
+    fun getBitmapFromUri(uri: Uri): Bitmap {
         val tempImageView = ImageView(this@MainActivity)
         tempImageView.setImageURI(uri)
         return (tempImageView.drawable as BitmapDrawable).bitmap
     }
 
     fun saveBitmap(uri: Uri) {
-        val bitmap = outputBitmap.value
+        val bitmap = imageController.outputBitmap.value
 
         val directory = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "")
         directory.mkdirs()
@@ -589,7 +504,6 @@ class MainActivity : ComponentActivity() {
         fileOutputStream.close();
 
     }
-
 
 
 }

@@ -1,11 +1,19 @@
 package com.example.Glitchio
 
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
+import android.os.Environment
+import android.util.Log
+import android.widget.ImageView
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ExperimentalGraphicsApi
 import androidx.compose.ui.graphics.colorspace.ColorSpace
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.toColor
+import java.io.File
+import java.io.FileOutputStream
 
 fun formatValue(value : Float, min: Float, max : Float) : String{
     val valMapped = value * (max-min) + min
@@ -35,6 +43,24 @@ fun modifyColor(color : Color, h : Float, s : Float, v: Float) : Color{
     hsv[2] = (hsv[2] + v).coerceIn(0f, 1f)
 
     return Color.hsl(hsv[0], hsv[1], hsv[2], 1.0f)
+}
+
+fun resizeBitmap(bitmap: Bitmap): Bitmap {
+    var x = bitmap.width
+    var y = bitmap.height
+    val max = 500
+
+    if (x > y) {
+        x = x * max / y
+        y = max
+    } else {
+        y = y * max / x
+        x = max
+    }
+
+    val newBitmap = Bitmap.createScaledBitmap(bitmap, x, y, false)
+
+    return newBitmap
 }
 
 

@@ -16,7 +16,7 @@ class Sort(context : Context) : Renderer(context){
         initProgram(vertexShaderPath, fragmentShaderPath)
     }
 
-    override fun render(inputBitmap: Bitmap, parameters : List<Float>): Bitmap {
+    override fun render(inputBitmap: Bitmap, parameters : Array<Float>): Bitmap {
 
         val t = Timer()
         t.print("Start")
