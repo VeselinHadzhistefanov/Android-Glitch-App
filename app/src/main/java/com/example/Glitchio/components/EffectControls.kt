@@ -151,7 +151,7 @@ fun DragSlider(context: Context, parameterIdx: Int) {
                 parameters[parameterIdx] = (change.position.x / sliderDragArea.x.toPx()).coerceIn(0f, 1f)
                 val activity = context as MainActivity
                 //activity.requestRender(parameters)
-                activity.requestRenderEffect(parameters)
+                activity.effectController.requestRenderEffect(parameters)
 
             })
         })

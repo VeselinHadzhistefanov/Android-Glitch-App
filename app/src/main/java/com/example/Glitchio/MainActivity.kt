@@ -75,12 +75,17 @@ lateinit var previewBitmaps : MutableList<Bitmap>
 val effectCardHeight = 125.dp
 
 
+
 class MainActivity : ComponentActivity() {
+
+    lateinit var effectController : EffectController
 
 
     // OnCreate - App UI
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        effectController = EffectController(this)
 
         setContent {
             ComposeBasicAppTheme {
@@ -370,7 +375,7 @@ class MainActivity : ComponentActivity() {
                     inputBitmap.value = resizedBitmap
                     outputBitmap.value = resizedBitmap
                     showDefaultScreen.value = false
-                    renderPreviews()
+                    effectController.renderPreviews()
                     inputImageUri = it
                     imageUri = null
                 }
@@ -447,8 +452,8 @@ class MainActivity : ComponentActivity() {
                     val c = currEffect.controls[i]
                     parameters[i] = c.default
                 }
-                requestRender(parameters)
-                rendererCreated = false
+                effectController.requestRender(parameters)
+                effectController.rendererCreated = false
             }) {
 
             Surface(Modifier
@@ -490,7 +495,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun EffectsRow() {
         if(!showControls.value) {
-            renderPreviews()
+            effectController.renderPreviews()
         }
         Box(modifier = Modifier
             .fillMaxSize()
@@ -546,92 +551,12 @@ class MainActivity : ComponentActivity() {
                 timeFrame = (timeFrame+0.01)%(Math.PI*2)
 
 
-                requestRender(newParams)
+                effectController.requestRender(newParams)
                 handler.postDelayed(this, delay)
             }
         }, delay)
     }
 
-
-
-    var rendererCreated = false
-    lateinit var rendererInstance : Renderer
-
-    fun requestRenderEffect(params : List<Float>) {
-
-        if (!rendererCreated){
-            val rendererClass = categories[categoryIdx.value].effects[effectIdx.value].renderer.java
-            rendererInstance = rendererClass.constructors.first().newInstance(this@MainActivity) as Renderer
-            rendererCreated = true
-        }
-
-
-        if(!isRendering) {
-            scope.launch {
-                withContext(Dispatchers.Default) {
-                    isRendering = true
-
-                    val renderedBitmap = rendererInstance.render(inputBitmap.value, params)
-
-                    withContext(Dispatchers.Main) {
-                        outputBitmap.value = renderedBitmap
-                        isRendering = false
-                    }
-                }
-            }
-        }
-    }
-
-
-    fun requestRender(params : List<Float>) {
-
-        if(!isRendering) {
-            scope.launch {
-                withContext(Dispatchers.Default) {
-                    isRendering = true
-
-                    val rendererClass = categories[categoryIdx.value].effects[effectIdx.value].renderer.java
-                    val renderer = rendererClass.constructors.first().newInstance(this@MainActivity) as Renderer
-                    val renderedBitmap = renderer.render(inputBitmap.value, params)
-
-                    withContext(Dispatchers.Main) {
-                        outputBitmap.value = renderedBitmap
-                        isRendering = false
-                    }
-                }
-            }
-        }
-    }
-
-
-
-
-
-    fun renderPreviews(){
-        for (i in 0 until currCategory.effects.size) {
-            val effect = currCategory.effects[i]
-            val params = List(effect.controls.size) { k -> effect.controls[k].default }
-            renderPreviewBitmap(params, categoryIdx.value, i)
-        }
-
-    }
-    fun renderPreviewBitmap(params: List<Float>, categoryIdx: Int, effectIdx: Int) {
-
-        scope.launch {
-            withContext(Dispatchers.Default) {
-
-                val rendererClass = categories[categoryIdx].effects[effectIdx].renderer.java
-                val renderer = rendererClass.constructors.first().newInstance(this@MainActivity) as Renderer
-
-                val renderedBitmap = renderer.render(inputBitmap.value, params)
-
-                withContext(Dispatchers.Main) {
-                    previewBitmaps[effectIdx] = renderedBitmap
-                }
-            }
-        }
-
-    }
 
 
 

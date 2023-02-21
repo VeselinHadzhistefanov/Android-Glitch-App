@@ -17,15 +17,9 @@ class HueShift(context : Context) : Renderer(context) {
 
     override fun render(inputBitmap: Bitmap, parameters : List<Float>): Bitmap {
 
-        val t = Timer()
-        t.print("Start")
-
-        // Initialize shaders and load texture
-        //initProgram(vertexShaderPath, fragmentShaderPath)
-        t.print("Init Program")
 
         initTextures(inputBitmap)
-        t.print("Init textures")
+
         // Parameter uniforms
         val paramFloat1Handle = GLES20.glGetUniformLocation(mProgram, "paramFloat1")
 
@@ -36,12 +30,10 @@ class HueShift(context : Context) : Renderer(context) {
         GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgram, "u_Texture"), 0)
         GLES20.glFramebufferTexture2D(GLES30.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTextures[0], 0)
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
-        t.print("Draw")
 
         GLES20.glFinish()
         val outputBitmap = getOutputBitmap()
         //destroyContext()
-        t.print("Finish")
         return outputBitmap
     }
 

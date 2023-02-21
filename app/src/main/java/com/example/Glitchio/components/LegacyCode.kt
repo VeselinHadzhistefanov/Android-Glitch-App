@@ -54,7 +54,7 @@ fun CustomSlider(context : Context, parameterIdx : Int, isHue : Boolean = true, 
         }
 
         val activity = context as MainActivity
-        activity.requestRender(parameters)
+        activity.effectController.requestRender(parameters)
 
         delta
     })
