@@ -1,4 +1,4 @@
-package com.example.Glitchio
+package com.example.Glitchio.components2
 
 import android.content.Context
 import androidx.compose.foundation.*
@@ -23,8 +23,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.Glitchio.*
 import com.example.Glitchio.controllers.parameters
-import com.example.Glitchio.ui.components.SliderComponent
+import com.example.Glitchio.components.SliderComponent
 import com.example.Glitchio.ui.theme.*
 
 class EffectControls(val mainActivity: MainActivity) {

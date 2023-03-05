@@ -1,4 +1,4 @@
-package com.example.Glitchio
+package com.example.Glitchio.components2
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset

@@ -1,4 +1,4 @@
-package com.example.Glitchio.components
+package com.example.Glitchio.components2
 
 import android.content.Context
 import androidx.compose.foundation.border

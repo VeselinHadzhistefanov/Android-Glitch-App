@@ -30,10 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.Glitchio.components.Category
-import com.example.Glitchio.components.Control
-import com.example.Glitchio.components.Effect
-import com.example.Glitchio.components.categories
+import com.example.Glitchio.components2.*
 import com.example.Glitchio.controllers.AnimationController
 import com.example.Glitchio.controllers.RenderController
 import com.example.Glitchio.ui.theme.*

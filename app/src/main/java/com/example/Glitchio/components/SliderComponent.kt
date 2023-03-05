@@ -1,9 +1,8 @@
-package com.example.Glitchio.ui.components
+package com.example.Glitchio.components
 
 import android.content.Context
 import android.content.res.Resources
 import android.util.DisplayMetrics
-import android.view.Display
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
@@ -20,11 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.Glitchio.TextWithShadow
-import com.example.Glitchio.controllers.parameters
 import com.example.Glitchio.ui.theme.*
 import kotlin.math.abs
 

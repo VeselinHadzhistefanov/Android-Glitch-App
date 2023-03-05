@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import com.example.Glitchio.*
-import com.example.Glitchio.components.categories
+import com.example.Glitchio.components2.categories
 import com.example.Glitchio.renderer.Renderer
 import kotlinx.coroutines.*
 
