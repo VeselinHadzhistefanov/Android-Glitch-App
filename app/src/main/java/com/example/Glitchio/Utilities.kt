@@ -74,3 +74,10 @@ fun Color.saturation(saturation : Float) : Color{
 fun Color.value(value : Float) : Color{
     return modifyColor(this, 0f, 0f, value)
 }
+
+var startTime = System.currentTimeMillis()
+fun printTime(msg : String = ""){
+    val t = System.currentTimeMillis() - startTime
+    Log.i("$msg ", t.toString())
+    startTime = System.currentTimeMillis()
+}

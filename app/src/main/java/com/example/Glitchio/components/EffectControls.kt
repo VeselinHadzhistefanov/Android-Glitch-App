@@ -23,53 +23,36 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.Glitchio.controllers.parameters
+import com.example.Glitchio.ui.components.SliderComponent
 import com.example.Glitchio.ui.theme.*
 
-class EffectControls (val mainActivity: MainActivity){
-
-
-    @Composable
-    fun ControlsLayout(context: Context) {
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            //BackButton()
-            ParameterControls(context)
-        }
-    }
+class EffectControls(val mainActivity: MainActivity) {
 
     @Composable
     fun ParameterControls(context: Context) {
 
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .background(DarkGray)
         ) {
-            VerticalGradient(
-                modifier = Modifier.fillMaxSize(),
-                DarkGray.value(0.05f),
-                DarkGray.value(-0.05f)
-            )
-
             TextWithShadow(
                 text = currEffect.name,
                 color = MidLightGray,
                 textAlign = TextAlign.Center,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(0.dp, -35.dp)
             )
 
             Box(
-                Modifier
-                    .offset(0.dp, 0.dp)
-                    .align(Alignment.TopCenter)
+                Modifier.align(Alignment.TopCenter)
             ) {
                 Column(
                     modifier = Modifier
-                        .offset(10.dp, 10.dp)
+                        .offset(0.dp, 15.dp)
                         .align(Alignment.Center)
                 ) {
                     Spacer(Modifier.height(5.dp))
@@ -86,6 +69,7 @@ class EffectControls (val mainActivity: MainActivity){
                     }
                 }
             }
+
             Box(
                 Modifier
                     .align(Alignment.TopEnd)
@@ -93,6 +77,7 @@ class EffectControls (val mainActivity: MainActivity){
             ) {
                 AcceptButton()
             }
+
             Box(
                 Modifier
                     .align(Alignment.TopStart)
@@ -111,7 +96,7 @@ class EffectControls (val mainActivity: MainActivity){
 
     class ValuePair(val x: Dp, val y: Dp) {}
 
-    val sliderSize = ValuePair(250.dp, 6.dp)
+    val sliderSize = ValuePair(370.dp, 9.dp)
     val sliderDragArea = ValuePair(sliderSize.x, 45.dp)
 
 
@@ -127,11 +112,13 @@ class EffectControls (val mainActivity: MainActivity){
     ) {
 
 
+        SliderComponent(context)
+
         if (!isHue) {
-            DragSlider(context, parameterIdx)
+            //DragSlider(context, parameterIdx)
         }
         if (isHue) {
-            HueSlider(parameterIdx)
+            //HueSlider(parameterIdx)
         }
 
 
@@ -147,41 +134,34 @@ class EffectControls (val mainActivity: MainActivity){
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(onHorizontalDrag = { change, dragAmount ->
 
-                    mainActivity.parameterController.parameters[parameterIdx] =
-                        (change.position.x / sliderDragArea.x.toPx()).coerceIn(0f, 1f)
-                    val activity = context as MainActivity
+                    parameters[parameterIdx] = (change.position.x / sliderDragArea.x.toPx()).coerceIn(0f, 1f)
 
+                    //val activity = context as MainActivity
                     //activity.requestRender(parameters)
                     //activity.renderController.requestRenderEffect(mainActivity.parameterController.parameters.toTypedArray())
 
                     mainActivity.renderController.renderSequence()
-                    mainActivity.renderController.runAnimation()
+                    //mainActivity.renderController.requestRenderEffect()
+                    //mainActivity.animationController.runAnimation()
 
                 })
             })
         {
             Box(modifier = Modifier.offset(0.dp, 10.dp)) {
 
-                val value = sliderSize.x * mainActivity.parameterController.parameters[parameterIdx]
-                val displayValue = (mainActivity.parameterController.parameters[parameterIdx] * 1000).toInt() / 10f
+                val value = sliderSize.x * parameters[parameterIdx]
+                val displayValue = (parameters[parameterIdx] * 100).toInt()
 
                 SliderText(currEffect.controls[parameterIdx].name)
-                SliderValue(displayValue.toString())
+                SliderValue("$displayValue%")
                 SliderBG()
 
                 Box(
                     modifier = Modifier
                         .size(value, sliderSize.y)
                         .clip(RoundedCornerShape(20.dp))
-                ) {
-                    VerticalGradient(
-                        modifier = Modifier.fillMaxSize(),
-                        color1 = MidLightGray.value(0.2f),
-                        color2 = MidLightGray.value(-0.4f)
-                    )
-                }
-
-                SliderDragHandle(value)
+                        .background(MidLightGray)
+                ) {}
             }
         }
 
@@ -189,14 +169,14 @@ class EffectControls (val mainActivity: MainActivity){
 
 
     @Composable
-    fun DualSlider(parameterIdx1: Int, parameterIdx2: Int, ) {
+    fun DualSlider(parameterIdx1: Int, parameterIdx2: Int) {
 
-        val value1 = sliderSize.x * mainActivity.parameterController.parameters[parameterIdx1]
-        val value2 = sliderSize.x * mainActivity.parameterController.parameters[parameterIdx2]
-        val displayValue = (mainActivity.parameterController.parameters[parameterIdx1] * 1000).toInt() / 10f
+        val value1 = sliderSize.x * parameters[parameterIdx1]
+        val value2 = sliderSize.x * parameters[parameterIdx2]
+        val displayValue = (parameters[parameterIdx1] * 100).toInt()
 
         SliderText(currEffect.controls[parameterIdx1].name)
-        SliderValue(displayValue.toString())
+        SliderValue("$displayValue%")
         SliderBG()
 
         Box(
@@ -216,31 +196,15 @@ class EffectControls (val mainActivity: MainActivity){
 
     }
 
-
-    @Composable
-    fun SliderBG() {
-        Box(
-            modifier = Modifier
-                .size(sliderSize.x, sliderSize.y)
-                .clip(RoundedCornerShape(20.dp))
-        ) {
-            VerticalGradient(
-                modifier = Modifier.fillMaxSize(),
-                color1 = MidDarkGray.value(0.1f),
-                color2 = MidDarkGray.value(-0.1f)
-            )
-        }
-    }
-
     @Composable
     fun SliderText(text: String) {
         TextWithShadow(
             text = text, modifier = Modifier
                 .size(100.dp, 20.dp)
-                .offset(-110.dp, -7.dp),
-            color = MidGray,
-            fontSize = 12.sp,
-            textAlign = TextAlign.Right
+                .offset(0.dp, -21.dp),
+            color = MidLightGray,
+            fontSize = 14.sp,
+            textAlign = TextAlign.Left
         )
     }
 
@@ -249,10 +213,10 @@ class EffectControls (val mainActivity: MainActivity){
         TextWithShadow(
             text = text, modifier = Modifier
                 .size(100.dp, 20.dp)
-                .offset(sliderSize.x + 10.dp, -7.dp),
-            color = MidGray,
-            fontSize = 12.sp,
-            textAlign = TextAlign.Left
+                .offset(sliderSize.x - 100.dp , -21.dp),
+            color = MidLightGray,
+            fontSize = 14.sp,
+            textAlign = TextAlign.Right
         )
     }
 
@@ -263,13 +227,18 @@ class EffectControls (val mainActivity: MainActivity){
                 .size(15.dp, 15.dp)
                 .offset(value - 7.5.dp, -4.5.dp)
                 .clip(RoundedCornerShape(10.dp))
-        ) {
-            VerticalGradient(
-                modifier = Modifier.fillMaxSize(),
-                color1 = LightGray.value(0.2f),
-                color2 = LightGray.value(-0.2f)
-            )
-        }
+                .background(DarkGray)
+        ) {}
+    }
+
+    @Composable
+    fun SliderBG() {
+        Box(
+            modifier = Modifier
+                .size(sliderSize.x, sliderSize.y)
+                .clip(RoundedCornerShape(20.dp))
+                .background(MidDarkGray.value(-0.1f))
+        ) {}
     }
 
 
@@ -277,8 +246,9 @@ class EffectControls (val mainActivity: MainActivity){
     @Composable
     fun HueSlider(parameterIdx: Int) {
 
-        val value = sliderSize.x * mainActivity.parameterController.parameters[parameterIdx]
-        val displayValue = (mainActivity.parameterController.parameters[parameterIdx] * 1000).toInt() / 10f
+        val value = sliderSize.x * parameters[parameterIdx]
+        val displayValue =
+            (parameters[parameterIdx] * 1000).toInt() / 10f
 
 
         TextWithShadow(
@@ -312,7 +282,13 @@ class EffectControls (val mainActivity: MainActivity){
                 .size(15.dp, 15.dp)
                 .offset(value - 7.5.dp, -4.5.dp)
                 .clip(RoundedCornerShape(20.dp))
-                .background(Color.hsv(360f * mainActivity.parameterController.parameters[parameterIdx], 1f, 1f))
+                .background(
+                    Color.hsv(
+                        360f * parameters[parameterIdx],
+                        1f,
+                        1f
+                    )
+                )
         ) {}
 
 
@@ -326,7 +302,8 @@ class EffectControls (val mainActivity: MainActivity){
             onClick = {
                 showControls.value = false
                 controlIdx.value = 0
-                mainActivity.imageController.inputBitmap.value = mainActivity.imageController.outputBitmap.value
+                mainActivity.renderController.inputBitmap.value =
+                    mainActivity.renderController.outputBitmap.value
             }
         ) {
             Icon(
@@ -346,7 +323,8 @@ class EffectControls (val mainActivity: MainActivity){
             onClick = {
                 showControls.value = false
                 controlIdx.value = 0
-                mainActivity.imageController.outputBitmap.value = mainActivity.imageController.inputBitmap.value
+                mainActivity.renderController.outputBitmap.value =
+                    mainActivity.renderController.inputBitmap.value
             }
         ) {
             Icon(

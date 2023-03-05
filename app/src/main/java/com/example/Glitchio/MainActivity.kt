@@ -6,7 +6,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
 import android.util.Log
 import android.widget.ImageView
 import androidx.activity.ComponentActivity
@@ -21,7 +20,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -36,11 +34,11 @@ import com.example.Glitchio.components.Category
 import com.example.Glitchio.components.Control
 import com.example.Glitchio.components.Effect
 import com.example.Glitchio.components.categories
+import com.example.Glitchio.controllers.AnimationController
+import com.example.Glitchio.controllers.RenderController
 import com.example.Glitchio.ui.theme.*
-import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.math.sin
 
 // Coroutines =====================================
 //val scope = CoroutineScope(Job() + Dispatchers.Main)
@@ -62,18 +60,16 @@ var inputImageUri: Uri? = null
 
 val effectCardHeight = 125.dp
 
-
 class MainActivity : ComponentActivity() {
 
-    var renderController: RenderController = RenderController(this)
     var animationController: AnimationController = AnimationController(this)
-    var imageController: ImageController = ImageController(this)
-    var parameterController : ParameterController = ParameterController(this)
+    var renderController: RenderController = RenderController(this)
+    var uiController: UIController = UIController(this)
 
-    var effectControls : EffectControls = EffectControls(this)
+    var effectControls: EffectControls = EffectControls(this)
 
 
-    // OnCreate - App UI
+    // OnCreate
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -85,7 +81,7 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    // App UI
+    // Main App UI
     @Composable
     fun AppUI(context: Context) {
 
@@ -94,11 +90,12 @@ class MainActivity : ComponentActivity() {
         controlIdx = remember { mutableStateOf(0) }
 
         val defaultBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-        imageController.inputBitmap = remember { mutableStateOf(defaultBitmap) }
-        imageController.outputBitmap = remember { mutableStateOf(defaultBitmap) }
-        imageController.previewBitmaps = remember { mutableStateListOf(*Array(10) { defaultBitmap }) }
+        this.renderController.inputBitmap = remember { mutableStateOf(defaultBitmap) }
+        this.renderController.outputBitmap = remember { mutableStateOf(defaultBitmap) }
+        this.renderController.previewBitmaps =
+            remember { mutableStateListOf(*Array(10) { defaultBitmap }) }
 
-        parameterController.parameters = remember { mutableStateListOf(*Array(4) { 0f }) }
+        //this.renderController.parameters = remember { mutableStateListOf(*Array(4) { 0f }) }
 
         showControls = remember { mutableStateOf(false) }
         showDefaultScreen = remember { mutableStateOf(true) }
@@ -159,7 +156,7 @@ class MainActivity : ComponentActivity() {
                             .weight(1.0f)
                     ) {
                         Image(
-                            bitmap = imageController.outputBitmap.value.asImageBitmap(),
+                            bitmap = this@MainActivity.renderController.outputBitmap.value.asImageBitmap(),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize()
                         )
@@ -239,23 +236,7 @@ class MainActivity : ComponentActivity() {
                         enter = slideInVertically { height -> height * 2 } + fadeIn(),
                         exit = slideOutVertically { height -> height * 2 } + fadeOut()) {
 
-                        // Background
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .alpha(0.8f),
-                            color = DarkGray
-                        ) {}
-
-                        effectControls.ControlsLayout(context)
-
-                        // Top edge
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp),
-                            color = MidDarkGray
-                        ) {}
+                        effectControls.ParameterControls(context)
                     }
                 }
 
@@ -325,10 +306,10 @@ class MainActivity : ComponentActivity() {
                     val bitmapFromUri = getBitmapFromUri(it)
                     val resizedBitmap = resizeBitmap(bitmapFromUri)
 
-                    imageController.inputBitmap.value = resizedBitmap
-                    imageController.outputBitmap.value = resizedBitmap
+                    this@MainActivity.renderController.inputBitmap.value = resizedBitmap
+                    this@MainActivity.renderController.outputBitmap.value = resizedBitmap
                     showDefaultScreen.value = false
-                    renderController.renderPreviews()
+                    this@MainActivity.renderController.renderPreviews()
                     inputImageUri = it
                     imageUri = null
                 }
@@ -371,31 +352,24 @@ class MainActivity : ComponentActivity() {
 
 
     @Composable
-    fun EffectCard(categoryIdx: Int, effectidx: Int) {
+    fun EffectCard(categoryIdx: Int, idx: Int) {
         val size = 80.dp
 
         Box(modifier = Modifier
             .width(size)
             .height(size)
             .clickable {
-                effectIdx.value = effectidx
-                showControls.value = true
-                for (i in currEffect.controls.indices) {
-                    val c = currEffect.controls[i]
-                    parameterController.parameters[i] = c.default
-                }
-                renderController.requestRender(parameterController.parameters.toTypedArray())
-                renderController.rendererCreated = false
+                uiController.onClickEffectCard(idx)
             }) {
 
             Surface(
                 Modifier
                     .fillMaxSize(),
-                color = if (effectIdx.value == effectidx) MidGray else DarkGray
+                color = if (effectIdx.value == idx) MidGray else DarkGray
             ) {}
 
             Image(
-                bitmap = imageController.previewBitmaps[effectidx].asImageBitmap(),
+                bitmap = this@MainActivity.renderController.previewBitmaps[idx].asImageBitmap(),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
@@ -411,7 +385,7 @@ class MainActivity : ComponentActivity() {
                     .height(25.dp)
             ) {
                 TextWithShadow(
-                    text = categories[categoryIdx].effects[effectidx].name,
+                    text = categories[categoryIdx].effects[idx].name,
                     fontSize = 14.sp,
                     color = LightFont,
                     textAlign = TextAlign.Center,
@@ -427,10 +401,11 @@ class MainActivity : ComponentActivity() {
 
     }
 
+
     @Composable
     fun EffectsRow() {
         if (!showControls.value) {
-            renderController.renderPreviews()
+            this.renderController.renderPreviews()
         }
         Box(
             modifier = Modifier
@@ -482,9 +457,10 @@ class MainActivity : ComponentActivity() {
     }
 
     fun saveBitmap(uri: Uri) {
-        val bitmap = imageController.outputBitmap.value
+        val bitmap = this.renderController.outputBitmap.value
 
-        val directory = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "")
+        val directory =
+            File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "")
         directory.mkdirs()
 
         var idx = 1

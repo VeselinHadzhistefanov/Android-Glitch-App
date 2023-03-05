@@ -1,15 +1,34 @@
-package com.example.Glitchio
+package com.example.Glitchio.controllers
 
-import android.os.Handler
+import android.graphics.Bitmap
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import com.example.Glitchio.*
 import com.example.Glitchio.components.categories
 import com.example.Glitchio.renderer.Renderer
 import kotlinx.coroutines.*
+
+val parameters = mutableStateListOf(*Array(4) { 0f })
 
 class RenderController(val mainActivity: MainActivity) {
 
     var scope: CoroutineScope = CoroutineScope(Job() + Dispatchers.Main)
     lateinit var rendererInstance: Renderer
     var rendererCreated = false
+
+    //var parameters: MutableList<Float> = mutableStateListOf(*Array(4) { 0f })
+
+    lateinit var inputBitmap: MutableState<Bitmap>
+    lateinit var outputBitmap: MutableState<Bitmap>
+    lateinit var previewBitmaps: MutableList<Bitmap>
+
+    var bitmapSequence: Array<Bitmap> = Array(numFrames) { i ->
+        Bitmap.createBitmap(
+            1,
+            1,
+            Bitmap.Config.ARGB_8888
+        )
+    }
 
 
     fun requestRender(params: Array<Float>) {
@@ -20,13 +39,11 @@ class RenderController(val mainActivity: MainActivity) {
                     isRendering = true
 
                     val rendererClass = categories[categoryIdx.value].effects[effectIdx.value].renderer.java
-
                     val renderer = rendererClass.constructors.first().newInstance(mainActivity) as Renderer
-
-                    val renderedBitmap = renderer.render(mainActivity.imageController.inputBitmap.value, params)
+                    val renderedBitmap = renderer.render(mainActivity.renderController.inputBitmap.value, params)
 
                     withContext(Dispatchers.Main) {
-                        mainActivity.imageController.outputBitmap.value = renderedBitmap
+                        mainActivity.renderController.outputBitmap.value = renderedBitmap
                         isRendering = false
                     }
                 }
@@ -34,54 +51,35 @@ class RenderController(val mainActivity: MainActivity) {
         }
     }
 
-    fun runAnimation(){
-
-        val handler: Handler = Handler()
-        val delay = 1000L / 30L
-        var frame = 0
-
-        handler.postDelayed(object : java.lang.Runnable {
-            override fun run() {
-
-                val currImage = mainActivity.imageController.bitmapSequence[frame]
-                mainActivity.imageController.outputBitmap.value = currImage
-                frame = (frame+1)%30
-
-                handler.postDelayed(this, delay)
-            }
-        }, delay)
-
-    }
-
 
     fun renderSequence(){
+
         scope.launch {
             withContext(Dispatchers.Default) {
-
+                printTime("1")
                 val rendererClass = categories[categoryIdx.value].effects[effectIdx.value].renderer.java
                 val renderer = rendererClass.constructors.first().newInstance(mainActivity) as Renderer
+                printTime("2")
 
-
-                for (i in 0 .. 29){
-                    val currParameters = mainActivity.animationController.getParameters(i)
-                    val renderedBitmap = renderer.render(mainActivity.imageController.inputBitmap.value, currParameters)
-                    mainActivity.imageController.bitmapSequence[i] = renderedBitmap
+                val bitmapSequence: Array<Bitmap> = Array(numFrames) { i -> Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888) }
+                printTime("3")
+                for (i in 0..149) {
+                    //val params = mainActivity.animationController.getParameters(i)
+                    val params = arrayOf(0f, 0f, 0f, 0f)
+                    val renderedBitmap = renderer.render(mainActivity.renderController.inputBitmap.value, params)
+                    bitmapSequence[i] = renderedBitmap
                 }
-
-
-                withContext(Dispatchers.Main) {
-                    mainActivity.imageController.outputBitmap.value = mainActivity.imageController.bitmapSequence[0]
-                    isRendering = false
-                }
+                printTime("4")
             }
         }
-
     }
 
 
 
 
-    fun requestRenderEffect(params: Array<Float>) {
+    fun requestRenderEffect() {
+
+        val params = mainActivity.animationController.getParameters(0)
 
         if (!rendererCreated) {
             val rendererClass = categories[categoryIdx.value].effects[effectIdx.value].renderer.java
@@ -97,12 +95,12 @@ class RenderController(val mainActivity: MainActivity) {
                     isRendering = true
 
                     val renderedBitmap = rendererInstance.render(
-                        mainActivity.imageController.inputBitmap.value,
+                        mainActivity.renderController.inputBitmap.value,
                         params
                     )
 
                     withContext(Dispatchers.Main) {
-                        mainActivity.imageController.outputBitmap.value = renderedBitmap
+                        mainActivity.renderController.outputBitmap.value = renderedBitmap
                         isRendering = false
                     }
                 }
@@ -130,10 +128,10 @@ class RenderController(val mainActivity: MainActivity) {
                     rendererClass.constructors.first().newInstance(mainActivity) as Renderer
 
                 val renderedBitmap =
-                    renderer.render(mainActivity.imageController.inputBitmap.value, params)
+                    renderer.render(mainActivity.renderController.inputBitmap.value, params)
 
                 withContext(Dispatchers.Main) {
-                    mainActivity.imageController.previewBitmaps[effectIdx] = renderedBitmap
+                    mainActivity.renderController.previewBitmaps[effectIdx] = renderedBitmap
                 }
             }
         }
