@@ -113,7 +113,7 @@ class EffectControls(val mainActivity: MainActivity) {
     ) {
 
 
-        SliderComponent(context)
+        SliderComponent()
 
         if (!isHue) {
             //DragSlider(context, parameterIdx)

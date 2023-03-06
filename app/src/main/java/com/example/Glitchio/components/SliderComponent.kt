@@ -35,7 +35,7 @@ val DRAG_HANDLE_SIZE = 15.dp
 
 
 @Composable
-fun SliderComponent(context: Context) {
+fun SliderComponent() {
 
     val value = remember { mutableStateOf(0f) }
 

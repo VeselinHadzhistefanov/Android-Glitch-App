@@ -30,9 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.Glitchio.components.ControlsComponent
 import com.example.Glitchio.components2.*
 import com.example.Glitchio.controllers.AnimationController
 import com.example.Glitchio.controllers.RenderController
+import com.example.Glitchio.core.controls.EffectsInitializer
 import com.example.Glitchio.ui.theme.*
 import java.io.File
 import java.io.FileOutputStream
@@ -57,6 +59,10 @@ var inputImageUri: Uri? = null
 
 val effectCardHeight = 125.dp
 
+
+var effects : ArrayList<com.example.Glitchio.core.controls.Effect> = arrayListOf()
+lateinit var pageIdx : MutableState<Int>
+
 class MainActivity : ComponentActivity() {
 
     var animationController: AnimationController = AnimationController(this)
@@ -69,6 +75,9 @@ class MainActivity : ComponentActivity() {
     // OnCreate
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val effectInitializer = EffectsInitializer()
+        effects = effectInitializer.initEffects(effects)
 
         setContent {
             ComposeBasicAppTheme {
@@ -85,6 +94,8 @@ class MainActivity : ComponentActivity() {
         categoryIdx = remember { mutableStateOf(0) }
         effectIdx = remember { mutableStateOf(0) }
         controlIdx = remember { mutableStateOf(0) }
+
+        pageIdx = remember { mutableStateOf(0) }
 
         val defaultBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
         this.renderController.inputBitmap = remember { mutableStateOf(defaultBitmap) }
@@ -233,9 +244,12 @@ class MainActivity : ComponentActivity() {
                         enter = slideInVertically { height -> height * 2 } + fadeIn(),
                         exit = slideOutVertically { height -> height * 2 } + fadeOut()) {
 
-                        effectControls.ParameterControls(context)
+                        //effectControls.ParameterControls(context)
+
                     }
                 }
+
+                if(showControls.value) ControlsComponent()
 
 
             }
