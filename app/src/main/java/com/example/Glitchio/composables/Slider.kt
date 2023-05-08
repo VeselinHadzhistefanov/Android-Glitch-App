@@ -1,10 +1,9 @@
 package com.example.Glitchio.components
 
-import android.content.Context
 import android.content.res.Resources
 import android.util.DisplayMetrics
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -21,6 +20,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.Glitchio.MainActivity
+import com.example.Glitchio.effects.getCurrentEffect
+import com.example.Glitchio.parameters
 import com.example.Glitchio.ui.theme.*
 import kotlin.math.abs
 
@@ -28,34 +30,35 @@ val displayMetrics: DisplayMetrics = Resources.getSystem().displayMetrics
 val DENSITY = displayMetrics.density
 val SLIDER_WIDTH = displayMetrics.widthPixels.dp / DENSITY * 0.8f
 val SLIDER_HEIGHT = 5.dp
-val DRAG_AREA_HEIGHT = 45.dp
+val DRAG_AREA_HEIGHT = 50.dp
 val SLIDER_TEXT_SIZE = 12.sp
-val SLIDER_TEXT_OFFSET = 18.dp
+val SLIDER_TEXT_OFFSET = 20.dp
 val DRAG_HANDLE_SIZE = 15.dp
 
 
 @Composable
-fun SliderComponent() {
-
+fun Slider(name: String, parameterIdx : Int) {
     val value = remember { mutableStateOf(0f) }
+    val effect = getCurrentEffect()
 
     Box(modifier = Modifier
         .size(SLIDER_WIDTH, DRAG_AREA_HEIGHT)
         .pointerInput(Unit) {
             detectHorizontalDragGestures(onHorizontalDrag = { change, dragAmount ->
                 value.value = (change.position.x.dp / DENSITY / SLIDER_WIDTH).coerceIn(0f, 1f)
+                parameters[parameterIdx] = value.value
+                val mainActivity = MainActivity.getInstance()
+                mainActivity.renderController.renderEffect()
             })
         }) {
 
         SliderBG()
         SliderFill(value.value)
         SliderDragHandle(value.value)
-        SliderNameText("VALUE")
-        val valueText  = ((value.value - 0.5) * 200).toInt()
+        SliderNameText(name)
+        val valueText = ((value.value - 0.5) * 200).toInt()
         SliderValueText("$valueText%")
-
     }
-
 }
 
 @Composable

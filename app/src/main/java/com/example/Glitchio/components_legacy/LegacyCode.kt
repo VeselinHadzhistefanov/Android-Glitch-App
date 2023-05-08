@@ -1,29 +1,4 @@
-package com.example.Glitchio.components2
-
-import android.content.Context
-import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.Divider
-import androidx.compose.material.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.Glitchio.*
-import com.example.Glitchio.ui.theme.LightFont
-import com.example.Glitchio.ui.theme.MidDarkGray
-import com.example.Glitchio.ui.theme.MidGray
+package com.example.Glitchio.components_legacy
 
 class LegacyCode {
 }

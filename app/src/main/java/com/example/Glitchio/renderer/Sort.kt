@@ -7,7 +7,7 @@ import android.opengl.GLES30
 import android.util.Log
 import com.example.Glitchio.R
 
-class Sort(context : Context) : Renderer(context){
+class Sort(context : Context) : Renderer(context, "Sort", "Amount", "Direction"){
 
     private val vertexShaderPath = R.raw.vertex_shader
     private val fragmentShaderPath = R.raw.sort

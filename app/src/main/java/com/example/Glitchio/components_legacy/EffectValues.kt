@@ -1,4 +1,4 @@
-package com.example.Glitchio.components2
+package com.example.Glitchio.components_legacy
 
 import com.example.Glitchio.renderer.*
 import kotlin.reflect.KClass

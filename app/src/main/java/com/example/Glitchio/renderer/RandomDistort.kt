@@ -6,7 +6,7 @@ import android.opengl.GLES20
 import android.opengl.GLES30
 import com.example.Glitchio.R
 
-class RandomDistort(context : Context) : Renderer(context) {
+class RandomDistort(context : Context) : Renderer(context, "Random Distort", "Amount", "Grain") {
 
     private val vertexShaderPath = R.raw.vertex_shader
     private val fragmentShaderPath = R.raw.random_distort

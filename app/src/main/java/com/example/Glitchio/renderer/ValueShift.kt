@@ -6,7 +6,7 @@ import android.opengl.GLES20
 import android.opengl.GLES30
 import com.example.Glitchio.R
 
-class ValueShift(context : Context) : Renderer(context) {
+class ValueShift(context : Context) : Renderer(context, "Value Shift", "Shift") {
 
     private val vertexShaderPath = R.raw.vertex_shader
     private val fragmentShaderPath = R.raw.value_shift

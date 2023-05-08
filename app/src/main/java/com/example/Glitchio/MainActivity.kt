@@ -30,11 +30,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.Glitchio.components.ControlsComponent
-import com.example.Glitchio.components2.*
-import com.example.Glitchio.controllers.AnimationController
-import com.example.Glitchio.controllers.RenderController
-import com.example.Glitchio.core.controls.EffectsInitializer
+import com.example.Glitchio.components.ControlsUI
+import com.example.Glitchio.components.getHeight
+import com.example.Glitchio.components_legacy.*
+import com.example.Glitchio.effects.EffectsInitializer
 import com.example.Glitchio.ui.theme.*
 import java.io.File
 import java.io.FileOutputStream
@@ -60,21 +59,28 @@ var inputImageUri: Uri? = null
 val effectCardHeight = 125.dp
 
 
-var effects : ArrayList<com.example.Glitchio.core.controls.Effect> = arrayListOf()
-lateinit var pageIdx : MutableState<Int>
+var effects: ArrayList<com.example.Glitchio.effects.Effect> = arrayListOf()
+lateinit var pageIdx: MutableState<Int>
 
 class MainActivity : ComponentActivity() {
 
-    var animationController: AnimationController = AnimationController(this)
     var renderController: RenderController = RenderController(this)
-    var uiController: UIController = UIController(this)
 
     var effectControls: EffectControls = EffectControls(this)
+
+    companion object {
+        private lateinit var instance: MainActivity
+
+        fun getInstance(): MainActivity {
+            return instance
+        }
+    }
 
 
     // OnCreate
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        instance = this
 
         val effectInitializer = EffectsInitializer()
         effects = effectInitializer.initEffects(effects)
@@ -181,62 +187,62 @@ class MainActivity : ComponentActivity() {
                         .fillMaxWidth()
                         .height(150.dp)
                 ) {
-                    AnimatedVisibility(visible = !showControls.value,
-                        enter = slideInVertically { height -> height * 2 } + fadeIn(),
-                        exit = slideOutVertically { height -> height * 2 } + fadeOut()) {
 
+                    Box(
+                        Modifier.fillMaxSize()
+                    ) {
+                        // Background
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = DarkGray
+                        ) {}
+
+                        // Top edge
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(1.dp),
+                            color = MidDarkGray
+                        ) {}
+
+                        // Effects Row
                         Box(
-                            Modifier.fillMaxSize()
+                            Modifier
+                                .offset(0.dp, -50.dp)
+                                .align(Alignment.BottomStart)
+                                .fillMaxWidth()
+                                .height(80.dp)
                         ) {
-                            // Background
-                            Surface(
-                                modifier = Modifier.fillMaxSize(),
-                                color = DarkGray
-                            ) {}
-
-                            // Top edge
-                            Surface(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp),
-                                color = MidDarkGray
-                            ) {}
-
-                            // Effects Row
-                            Box(
-                                Modifier
-                                    .offset(0.dp, -50.dp)
-                                    .align(Alignment.BottomStart)
-                                    .fillMaxWidth()
-                                    .height(80.dp)
-                            ) {
-                                EffectsRow()
-                            }
-
-                            // Categories Row
-                            Box(
-                                Modifier
-                                    .offset(0.dp, 0.dp)
-                                    .align(Alignment.BottomStart)
-                                    .fillMaxWidth()
-                                    .height(30.dp)
-                            ) {
-
-                                CategoriesRow()
-                            }
-
-
+                            EffectsRow()
                         }
+
+                        // Categories Row
+                        Box(
+                            Modifier
+                                .offset(0.dp, 0.dp)
+                                .align(Alignment.BottomStart)
+                                .fillMaxWidth()
+                                .height(30.dp)
+                        ) {
+
+                            CategoriesRow()
+                        }
+
+
                     }
+
                 }
 
                 // Effect Controls
-                val height = currEffect.controls.size * 45 + 15
+
+                //val height = currEffect.controls.size * 45 + 15
+                val height = getHeight()
                 Box(
                     Modifier
                         .align(Alignment.BottomStart)
+                        .offset(0.dp, -150.dp)
                         .fillMaxWidth()
-                        .height(height.dp)
+                        .height(height)
                 )
 
                 {
@@ -247,9 +253,9 @@ class MainActivity : ComponentActivity() {
                         //effectControls.ParameterControls(context)
 
                     }
-                }
+                    if (showControls.value) ControlsUI()
 
-                if(showControls.value) ControlsComponent()
+                }
 
 
             }
@@ -361,7 +367,6 @@ class MainActivity : ComponentActivity() {
 
     }
 
-
     @Composable
     fun EffectCard(categoryIdx: Int, idx: Int) {
         val size = 80.dp
@@ -370,7 +375,7 @@ class MainActivity : ComponentActivity() {
             .width(size)
             .height(size)
             .clickable {
-                uiController.onClickEffectCard(idx)
+                onClickEffectCard(idx)
             }) {
 
             Surface(
@@ -412,12 +417,13 @@ class MainActivity : ComponentActivity() {
 
     }
 
-
     @Composable
     fun EffectsRow() {
         if (!showControls.value) {
-            this.renderController.renderPreviews()
+            //this.renderController.renderPreviews()
         }
+
+        this.renderController.renderPreviews()
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -460,6 +466,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    fun onClickEffectCard(idx : Int){
+        effectIdx.value = idx
+        showControls.value = true
+
+        for (i in currEffect.controls.indices) {
+            val control = currEffect.controls[i]
+            parameters[i] = control.default
+        }
+
+        renderController.renderEffect()
+    }
 
     fun getBitmapFromUri(uri: Uri): Bitmap {
         val tempImageView = ImageView(this@MainActivity)
@@ -491,7 +508,5 @@ class MainActivity : ComponentActivity() {
         fileOutputStream.close();
 
     }
-
-
 }
 

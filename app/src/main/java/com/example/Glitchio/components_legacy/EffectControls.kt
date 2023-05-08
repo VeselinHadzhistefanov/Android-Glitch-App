@@ -1,4 +1,4 @@
-package com.example.Glitchio.components2
+package com.example.Glitchio.components_legacy
 
 import android.content.Context
 import androidx.compose.foundation.*
@@ -24,8 +24,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.Glitchio.*
-import com.example.Glitchio.controllers.parameters
-import com.example.Glitchio.components.SliderComponent
 import com.example.Glitchio.ui.theme.*
 
 class EffectControls(val mainActivity: MainActivity) {
@@ -113,7 +111,7 @@ class EffectControls(val mainActivity: MainActivity) {
     ) {
 
 
-        SliderComponent()
+        //SliderComponent()
 
         if (!isHue) {
             //DragSlider(context, parameterIdx)
@@ -141,7 +139,7 @@ class EffectControls(val mainActivity: MainActivity) {
                     //activity.requestRender(parameters)
                     //activity.renderController.requestRenderEffect(mainActivity.parameterController.parameters.toTypedArray())
 
-                    mainActivity.renderController.renderSequence()
+                    mainActivity.renderController.renderEffect()
                     //mainActivity.renderController.requestRenderEffect()
                     //mainActivity.animationController.runAnimation()
 

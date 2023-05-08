@@ -6,7 +6,7 @@ import android.opengl.GLES20
 import android.opengl.GLES30
 import com.example.Glitchio.R
 
-class Interpolate(context: Context) : Renderer(context) {
+class Interpolate(context: Context) : Renderer(context, "Interpolate", "Position", "Size") {
 
     private val vertexShaderPath = R.raw.vertex_shader
     private val fragmentShaderPath = R.raw.interpolate

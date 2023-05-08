@@ -6,7 +6,7 @@ import android.opengl.GLES20
 import android.opengl.GLES30
 import com.example.Glitchio.R
 
-class Wave(context : Context) : Renderer(context) {
+class Wave(context : Context) : Renderer(context, "Wave", "Amplitude", "Frequency") {
 
     private val vertexShaderPath = R.raw.vertex_shader
     private val fragmentShaderPath = R.raw.wave

@@ -6,7 +6,7 @@ import android.opengl.GLES20
 import android.opengl.GLES30
 import com.example.Glitchio.R
 
-class HueFocus(context: Context) : Renderer(context) {
+class HueFocus(context: Context) : Renderer(context,"Hue Focus", "Colour", "Amount") {
 
     private val vertexShaderPath = R.raw.vertex_shader
     private val fragmentShaderPath = R.raw.hue_focus

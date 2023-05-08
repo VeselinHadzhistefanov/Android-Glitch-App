@@ -7,18 +7,20 @@ import android.opengl.GLES30
 import com.example.Glitchio.R
 
 
-class Blur(context : Context) : Renderer(context) {
-
+class Blur(context : Context) : Renderer(context, "Blur", "Blur Amount") {
+    val t = Timer()
     private val vertexShaderPath = R.raw.vertex_shader
     private val fragmentShaderPath = R.raw.blur
 
     init {
+        t.print("1")
         initProgram(vertexShaderPath, fragmentShaderPath)
+        t.print("2")
     }
 
 
     override fun render(inputBitmap: Bitmap, parameters : Array<Float>): Bitmap {
-
+        t.print("3")
         // Initialize shaders and load texture
         initTextures(inputBitmap)
 
@@ -44,6 +46,7 @@ class Blur(context : Context) : Renderer(context) {
 
         GLES20.glFinish()
         val outputBitmap = getOutputBitmap()
+        t.print("4")
         return outputBitmap
     }
 

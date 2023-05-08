@@ -6,7 +6,7 @@ import android.opengl.GLES20
 import android.opengl.GLES30
 import com.example.Glitchio.R
 
-class ValueDistort(context : Context) : Renderer(context) {
+class ValueDistort(context : Context) : Renderer(context, "Value Distort", "Multiply", "Shift") {
 
     private val vertexShaderPath = R.raw.vertex_shader
     private val fragmentShaderPath = R.raw.value_distort

@@ -12,7 +12,7 @@ import java.nio.ByteOrder
 import java.nio.FloatBuffer
 
 
-abstract class Renderer(val context: Context) {
+abstract class Renderer(val context: Context, val name : String, vararg controlNames : String) {
     var width = 0
     var height = 0
 
@@ -42,7 +42,7 @@ abstract class Renderer(val context: Context) {
     fun initProgram(vertexShaderPath: Int, fragmentShaderPath: Int) {
         // Create EGL context
         createContext()
-        // Create an object to hold information from rendering
+        // Create an object to hold data from rendering
         createFramebuffer()
         // Create an object to holding vertices
         mVertexBuffer = ByteBuffer.allocateDirect(mTriangleVertices.size * FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer()
@@ -221,7 +221,7 @@ abstract class Renderer(val context: Context) {
 
     public class Timer(){
         var startTime = System.currentTimeMillis()
-        fun print(msg : String = ""){
+        public fun print(msg : String = ""){
             val t = System.currentTimeMillis() - startTime
             Log.i("$msg ", t.toString())
             startTime = System.currentTimeMillis()
