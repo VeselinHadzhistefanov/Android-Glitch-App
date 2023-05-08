@@ -28,7 +28,7 @@ import kotlin.math.abs
 
 val displayMetrics: DisplayMetrics = Resources.getSystem().displayMetrics
 val DENSITY = displayMetrics.density
-val SLIDER_WIDTH = displayMetrics.widthPixels.dp / DENSITY * 0.8f
+val SLIDER_WIDTH = displayMetrics.widthPixels.dp / DENSITY * 0.9f
 val SLIDER_HEIGHT = 5.dp
 val DRAG_AREA_HEIGHT = 50.dp
 val SLIDER_TEXT_SIZE = 12.sp

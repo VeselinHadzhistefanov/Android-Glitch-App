@@ -8,6 +8,7 @@ val LightGrayVariant = Color(0xFFE2E2E2)
 
 val MidGray = Color(0xFF929292)
 val MidDarkGray = Color(0xFF444444)
+val DarkerMidGray = Color(0xFF2B2B2B)
 
 val LightFont = Color(0xFFDFDFDF)
 val MidLightFont = Color(0xFFB9B9B9)
@@ -28,7 +29,7 @@ val IconSmallDark = Color(0xFF454545)
 val FontLight = Color(0xFFD3D3D3)
 val FontDark = Color(0xFF454545)
 
-val IconLargeLight = Color(0xFF959595)
+val IconLargeLight = Color(0xFFC9C9C9)
 val IconLargeDark = Color(0xFF3A3A3A)
 
 val UnderlineLight = Color(0xFF959595)

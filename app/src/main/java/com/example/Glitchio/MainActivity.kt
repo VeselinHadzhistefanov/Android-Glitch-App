@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.shadow
@@ -31,7 +32,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.Glitchio.components.ControlsUI
-import com.example.Glitchio.components.getHeight
 import com.example.Glitchio.components_legacy.*
 import com.example.Glitchio.effects.EffectsInitializer
 import com.example.Glitchio.ui.theme.*
@@ -180,88 +180,54 @@ class MainActivity : ComponentActivity() {
 
 
                 // Bottom Layout ========================================
-
                 Box(
                     Modifier
-                        .align(Alignment.BottomStart)
+                        .align(Alignment.BottomCenter)
                         .fillMaxWidth()
-                        .height(150.dp)
+                        .height(145.dp)
                 ) {
-
-                    Box(
-                        Modifier.fillMaxSize()
-                    ) {
-                        // Background
-                        Surface(
-                            modifier = Modifier.fillMaxSize(),
-                            color = DarkGray
-                        ) {}
-
-                        // Top edge
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp),
-                            color = MidDarkGray
-                        ) {}
-
-                        // Effects Row
-                        Box(
-                            Modifier
-                                .offset(0.dp, -50.dp)
-                                .align(Alignment.BottomStart)
-                                .fillMaxWidth()
-                                .height(80.dp)
-                        ) {
-                            EffectsRow()
-                        }
-
-                        // Categories Row
-                        Box(
-                            Modifier
-                                .offset(0.dp, 0.dp)
-                                .align(Alignment.BottomStart)
-                                .fillMaxWidth()
-                                .height(30.dp)
-                        ) {
-
-                            CategoriesRow()
-                        }
-
-
-                    }
-
-                }
-
-                // Effect Controls
-
-                //val height = currEffect.controls.size * 45 + 15
-                val height = getHeight()
-                Box(
-                    Modifier
-                        .align(Alignment.BottomStart)
-                        .offset(0.dp, -150.dp)
-                        .fillMaxWidth()
-                        .height(height)
-                )
-
-                {
-                    AnimatedVisibility(visible = showControls.value,
+                    AnimatedVisibility(visible = !showControls.value,
                         enter = slideInVertically { height -> height * 2 } + fadeIn(),
                         exit = slideOutVertically { height -> height * 2 } + fadeOut()) {
 
-                        //effectControls.ParameterControls(context)
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .background(DarkGray)
+                        ) {
 
+                            // Effects Row
+                            Box(
+                                Modifier
+                                    .offset(0.dp, -40.dp)
+                                    .align(Alignment.BottomStart)
+                                    .fillMaxWidth()
+                                    .height(80.dp)
+                            ) {
+                                EffectsRow()
+                            }
+
+                            // Categories Row
+                            Box(
+                                Modifier
+                                    .offset(0.dp, 0.dp)
+                                    .align(Alignment.BottomStart)
+                                    .fillMaxWidth()
+                                    .height(40.dp)
+                            ) {
+                                CategoriesRow()
+                            }
+                        }
                     }
-                    if (showControls.value) ControlsUI()
-
                 }
 
-
+                AnimatedVisibility(visible = showControls.value,
+                    enter = slideInVertically { height -> height * 2 } + fadeIn(),
+                    exit = slideOutVertically { height -> height * 2 } + fadeOut()) {
+                    ControlsUI()
+                }
             }
-
         }
-
     }
 
 
@@ -444,29 +410,31 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun CategoriesRow() {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
         ) {
-            Row() {
+            Row(Modifier.align(Center)) {
                 for (i in 0..categories.size - 1) {
-
-                    Spacer(modifier = Modifier.width(20.dp))
-
-                    Box(Modifier.clickable { categoryIdx.value = i }) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Box(Modifier
+                        .clickable { categoryIdx.value = i }
+                        .weight(1f))
+                    {
                         TextWithShadow(
                             text = categories[i].name,
                             fontSize = 14.sp,
                             color = if (categoryIdx.value == i) LightFont else MidFont,
-                            modifier = Modifier.offset(0.dp, -5.dp)
+                            modifier = Modifier.offset(0.dp, 0.dp)
                         )
                     }
-
                 }
+                Spacer(modifier = Modifier.weight(1f))
             }
 
         }
     }
 
-    fun onClickEffectCard(idx : Int){
+    fun onClickEffectCard(idx: Int) {
         effectIdx.value = idx
         showControls.value = true
 
