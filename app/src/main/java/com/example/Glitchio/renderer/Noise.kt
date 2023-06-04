@@ -5,41 +5,31 @@ import android.graphics.Bitmap
 import android.opengl.GLES20
 import android.opengl.GLES30
 import com.example.Glitchio.R
+import com.example.Glitchio.inputBitmap
+import com.example.Glitchio.parameters
 
-class Noise(context : Context) : Renderer(context, "Noise", "Amount", "Grain") {
-
-    private val vertexShaderPath = R.raw.vertex_shader
-    private val fragmentShaderPath = R.raw.noise
+class Noise(context : Context) : Renderer(context) {
 
     init {
-        initProgram(vertexShaderPath, fragmentShaderPath)
+        initShaderProgram(vertexShaderPath, R.raw.noise)
     }
 
-    override fun render(inputBitmap: Bitmap, parameters : Array<Float>): Bitmap {
+    override fun render(): Bitmap {
+        initTextures(inputBitmap.value)
+        setUniformValues(parameters[0], parameters[1])
 
-        GLES20.glGetError()
-
-        // Initialize shaders and load texture
-        initTextures(inputBitmap)
-
-        // Parameter uniforms
-        val paramFloat1Handle = GLES20.glGetUniformLocation(mProgram, "paramFloat1")
-        val paramFloat2Handle = GLES20.glGetUniformLocation(mProgram, "paramFloat2")
-
-        // Set uniforms
-        GLES20.glUniform1f(paramFloat1Handle, parameters[0])
-        GLES20.glUniform1f(paramFloat2Handle, parameters[1])
-
-        // Draw
+        //Run shaders
         GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgram, "u_Texture"), 0)
-        GLES20.glFramebufferTexture2D(GLES30.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTextures[0], 0)
+        GLES20.glFramebufferTexture2D(
+            GLES30.GL_FRAMEBUFFER,
+            GLES20.GL_COLOR_ATTACHMENT0,
+            GLES20.GL_TEXTURE_2D,
+            mTextures[1],
+            0
+        )
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
 
-        GLES20.glGetError()
-
         GLES20.glFinish()
-        val outputBitmap = getOutputBitmap()
-        return outputBitmap
+        return getOutputBitmap()
     }
-
 }

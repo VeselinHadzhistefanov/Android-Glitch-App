@@ -8,10 +8,10 @@ import com.example.Glitchio.R
 import com.example.Glitchio.inputBitmap
 import com.example.Glitchio.parameters
 
-class HueShift(context : Context) : Renderer(context) {
+class ColorThreshold(context: Context) : Renderer(context) {
 
     init {
-        initShaderProgram(vertexShaderPath, R.raw.hue_shift)
+        initShaderProgram(vertexShaderPath, R.raw.color_threshold)
     }
 
     override fun render(): Bitmap {

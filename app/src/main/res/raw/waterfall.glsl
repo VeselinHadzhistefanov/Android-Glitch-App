@@ -21,7 +21,6 @@ void main() {
 
 
     if(curY < y1 && curY > y2){
-
         vec4 textureColor1 = texture2D(u_Texture, vec2(v_TexCoordinate.x, y1));
         vec4 textureColor2 = texture2D(u_Texture, vec2(v_TexCoordinate.x, y2));
         for(int i = 0; i < 3; i++){
@@ -30,8 +29,5 @@ void main() {
 
     }
 
-
-
     gl_FragColor = textureColor;
-
 }

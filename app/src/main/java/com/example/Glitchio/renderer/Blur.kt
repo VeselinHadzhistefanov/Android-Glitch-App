@@ -5,49 +5,43 @@ import android.graphics.Bitmap
 import android.opengl.GLES20
 import android.opengl.GLES30
 import com.example.Glitchio.R
+import com.example.Glitchio.inputBitmap
+import com.example.Glitchio.parameters
 
-
-class Blur(context : Context) : Renderer(context, "Blur", "Blur Amount") {
-    val t = Timer()
-    private val vertexShaderPath = R.raw.vertex_shader
-    private val fragmentShaderPath = R.raw.blur
+class Blur(context: Context) : Renderer(context) {
 
     init {
-        t.print("1")
-        initProgram(vertexShaderPath, fragmentShaderPath)
-        t.print("2")
+        initShaderProgram(vertexShaderPath, R.raw.blur)
     }
 
+    override fun render(): Bitmap {
+        initTextures(inputBitmap.value)
+        setUniformValues(parameters[0])
 
-    override fun render(inputBitmap: Bitmap, parameters : Array<Float>): Bitmap {
-        t.print("3")
-        // Initialize shaders and load texture
-        initTextures(inputBitmap)
-
-        // Create parameter uniforms
-        val paramFloat1Handle = GLES20.glGetUniformLocation(mProgram, "paramFloat1")
-
-        // Set parameter values
-        GLES20.glUniform1f(paramFloat1Handle, parameters[0])
-
-        // Blur
-        for (i in 0..10){
-
+        //Run shaders
+        for (i in 0..10) {
             GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgram, "u_Texture"), 0)
-            GLES20.glFramebufferTexture2D(GLES30.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTextures[1], 0)
+            GLES20.glFramebufferTexture2D(
+                GLES30.GL_FRAMEBUFFER,
+                GLES20.GL_COLOR_ATTACHMENT0,
+                GLES20.GL_TEXTURE_2D,
+                mTextures[1],
+                0
+            )
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
 
-
             GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgram, "u_Texture"), 1)
-            GLES20.glFramebufferTexture2D(GLES30.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mTextures[0], 0)
+            GLES20.glFramebufferTexture2D(
+                GLES30.GL_FRAMEBUFFER,
+                GLES20.GL_COLOR_ATTACHMENT0,
+                GLES20.GL_TEXTURE_2D,
+                mTextures[0],
+                0
+            )
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
         }
 
-
         GLES20.glFinish()
-        val outputBitmap = getOutputBitmap()
-        t.print("4")
-        return outputBitmap
+        return getOutputBitmap()
     }
-
 }

@@ -21,16 +21,16 @@ val categories = arrayListOf(
             Control("Amount",false, false, 0f, 100f, 0.5f)
         )),
 
-        Effect("Hue Distort", HueDistort::class, arrayListOf(
+        Effect("Hue Distort", Rainbow::class, arrayListOf(
             Control("Multiply",false, false, 0f, 10f, 0.5f),
             Control("Shift",false, true, 0f, 100f, 0.5f)
         )),
 
-        Effect("Value Shift", ValueShift::class, arrayListOf(
+        Effect("Value Shift", LightShift::class, arrayListOf(
             Control("Shift",false, true, 0f, 100f, 0.5f)
         )),
 
-        Effect("Value Distort", ValueDistort::class, arrayListOf(
+        Effect("Value Distort", LightMultiply::class, arrayListOf(
             Control("Multiply",false, false, 0f, 10f, 0.5f),
             Control("Shift",false, true, 0f, 100f, 0.5f)
         )),
@@ -43,7 +43,7 @@ val categories = arrayListOf(
             Control("Size",false, false, 0f, 100f, 0.25f)
         )),
 
-        Effect("Interpolate", Interpolate::class, arrayListOf(
+        Effect("Interpolate", Waterfall::class, arrayListOf(
             Control("Position",false, false, 0f, 100f, 0.25f),
             Control("Size",false, false, 0f, 100f, 0.25f)
         )),
@@ -53,7 +53,7 @@ val categories = arrayListOf(
             Control("Frequency",false, false, 0f, 100f, 0.25f)
         )),
 
-        Effect("Random Distort", RandomDistort::class, arrayListOf(
+        Effect("Random Distort", Cloud::class, arrayListOf(
             Control("Amount",false, false, 0f, 100f, 0.5f),
             Control("Grain",false, false, 0f, 100f, 0.5f)
         ))

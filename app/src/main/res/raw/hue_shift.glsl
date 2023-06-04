@@ -26,7 +26,6 @@ vec3 hsv2rgb(vec3 c)
 }
 
 void main() {
-
     vec4 textureColor = texture2D(u_Texture, v_TexCoordinate);
 
     vec3 hsv = rgb2hsv(textureColor.xyz);

@@ -29,18 +29,11 @@ vec3 hsv2rgb(vec3 c)
 void main() {
 
     vec4 textureColor = texture2D(u_Texture, v_TexCoordinate);
+    vec3 hsv = rgb2hsv(textureColor.xyz);
 
-    vec3 rgb = textureColor.xyz;
-    vec3 hsv = rgb2hsv(rgb);
+    hsv[0] = mod(mod(hsv[0] + paramFloat2, 1.0) * paramFloat1 * 10.0, 1.0);
 
-    float valueMapped = mod(mod(hsv[2] + paramFloat2, 1.0) * paramFloat1 * 10.0, 1.0);
+    vec3 rgb = hsv2rgb(hsv);
 
-    vec3 newHsv = vec3(hsv[0], hsv[1], valueMapped);
-    vec3 newRgb = hsv2rgb(newHsv);
-
-    vec4 colour = vec4(newRgb, 1.0);
-
-
-    gl_FragColor = colour;
-
+    gl_FragColor = vec4(rgb, 1.0);
 }

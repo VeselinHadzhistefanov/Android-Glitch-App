@@ -1,34 +1,48 @@
 package com.example.Glitchio.effects
 
-import android.util.Log
-import com.example.Glitchio.effects
-import com.example.Glitchio.renderer.Blur
-import com.example.Glitchio.renderer.Renderer
-import org.reflections.Reflections
-import org.reflections.scanners.Scanners
+import com.example.Glitchio.categoryIdx
+import com.example.Glitchio.effectIdx
+import com.example.Glitchio.renderer.*
 
-class EffectsInitializer {
+val effectCategories: ArrayList<ArrayList<Effect>> = arrayListOf()
+val effects: ArrayList<Effect> = arrayListOf()
 
-    fun initEffects(effects: ArrayList<Effect>): ArrayList<Effect> {
+fun initEffects() {
+    val categoryColour: ArrayList<Effect> = arrayListOf()
+    categoryColour.add(Effect(ChannelOffset::class, "Channel Offset", "Offset"))
+    categoryColour.add(Effect(HueShift::class, "Hue Shift", "Color Shift"))
+    categoryColour.add(Effect(HueFocus::class, "Hue Focus", "Color", "Focus Amount"))
+    categoryColour.add(Effect(ColorThreshold::class, "Color Threshold", "Color"))
+    categoryColour.add(Effect(Rainbow::class, "Rainbow", "Color Multiply", "Color Shift"))
+    categoryColour.add(Effect(LightShift::class, "Light Shift", "Shift"))
+    categoryColour.add(Effect(LightMultiply::class, "Light Multiply", "Multiply"))
 
-        val reflections = Reflections("com.example.Glitchio")
-        val rendererClasses = reflections.getSubTypesOf(Renderer::class.java)
+    val categoryDistort: ArrayList<Effect> = arrayListOf()
+    categoryDistort.add(Effect(Waterfall::class, "Waterfall", "Height"))
+    categoryDistort.add(Effect(Expand::class, "Expand",  "Height"))
+    categoryDistort.add(Effect(Wave::class, "Wave", "Displace", "Frequency"))
+    categoryDistort.add(Effect(Triangle::class, "Triangle", "Displace", "Frequency"))
+    categoryDistort.add(Effect(Hatch::class, "Hatch", "Displace", "Frequency"))
 
-        for (rendererClass in rendererClasses){
-            val name = rendererClass.name
-            Log.i("Name ======================================================", "sdf")
-            Log.i("Name ======================================================", name)
-            //effects.add(
-        }
+    val categoryDigital: ArrayList<Effect> = arrayListOf()
+    categoryDigital.add(Effect(Sort::class, "Sort", "Sort Amount", "Sort Direction"))
+    categoryDigital.add(Effect(Blur::class, "Blur", "Blur Amount"))
+    categoryDigital.add(Effect(Cloud::class, "Cloud", "Displace", "Size"))
+    categoryDigital.add(Effect(Noise::class, "Noise", "Noise Amount", "Size"))
 
-        effects.add(Effect("Hue Distortion", Blur::class, "Hue", "Distortion"))
+    effectCategories.add(categoryColour)
+    effectCategories.add(categoryDistort)
+    effectCategories.add(categoryDigital)
 
-        return effects
-    }
+    effects.addAll(categoryColour)
+    effects.addAll(categoryDistort)
+    effects.addAll(categoryDigital)
+}
 
+fun getCurrentCategory(): ArrayList<Effect> {
+    return effectCategories[categoryIdx.value]
 }
 
 fun getCurrentEffect(): Effect {
-    return effects[0]
-    //return effects[effectIdx.value]
+    return effectCategories[categoryIdx.value][effectIdx.value]
 }

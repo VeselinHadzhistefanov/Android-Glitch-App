@@ -1,13 +1,10 @@
 precision mediump float;
 
 uniform sampler2D u_Texture;
-
 uniform float paramFloat1;
 uniform float paramFloat2;
-
 varying vec3 v_Position;
 varying vec2 v_TexCoordinate;
-
 
 vec3 rgb2hsv(vec3 c)
 {
@@ -27,19 +24,15 @@ vec3 hsv2rgb(vec3 c)
 }
 
 void main() {
-
     vec4 textureColor = texture2D(u_Texture, v_TexCoordinate);
-
 
     vec3 rgb = textureColor.xyz;
     vec3 hsv = rgb2hsv(rgb);
 
-
     float hue = hsv[0];
+    float hueMapped = (mod(mod(hue - paramFloat1 + 1.0, 1.0) + 0.5, 1.0) - 0.5) * 2.0;
 
-    float hueMapped = (mod(mod(hue - paramFloat1 + 1.0, 1.0) + 0.5, 1.0) - 0.5)*2.0;
-
-    hueMapped = sign(hueMapped)*pow(sign(hueMapped)*hueMapped, paramFloat2);
+    hueMapped = sign(hueMapped) * pow(sign(hueMapped) * hueMapped, paramFloat2);
 
     hueMapped = mod(hueMapped / 2.0 + 1.0 + paramFloat1, 1.0);
 

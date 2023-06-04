@@ -31,17 +31,12 @@ float noise (vec2 xy) {
 }
 
 void main() {
-
     float amt = paramFloat1/2.0;
-    float grain =  paramFloat2 * 1000.0 + 100.0;
+    float grain =  (paramFloat2 + 1.0) * 1000.0;
 
     vec2 pos = vec2((v_TexCoordinate+1.0)*grain);
-
     vec4 textureColor = texture2D(u_Texture, v_TexCoordinate);
-
     vec3 rgb = textureColor.xyz * vec3((noise(pos)*2.0 - 1.0) * amt + 1.0);
 
-
     gl_FragColor = vec4(rgb, 1.0);
-
 }

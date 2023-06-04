@@ -4,10 +4,7 @@ import android.content.res.Resources
 import android.util.DisplayMetrics
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.*
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -20,15 +17,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.Glitchio.MainActivity
 import com.example.Glitchio.effects.getCurrentEffect
 import com.example.Glitchio.parameters
+import com.example.Glitchio.renderController
+import com.example.Glitchio.showControls
 import com.example.Glitchio.ui.theme.*
-import kotlin.math.abs
 
 val displayMetrics: DisplayMetrics = Resources.getSystem().displayMetrics
 val DENSITY = displayMetrics.density
-val SLIDER_WIDTH = displayMetrics.widthPixels.dp / DENSITY * 0.9f
 val SLIDER_HEIGHT = 5.dp
 val DRAG_AREA_HEIGHT = 50.dp
 val SLIDER_TEXT_SIZE = 12.sp
@@ -37,36 +33,43 @@ val DRAG_HANDLE_SIZE = 15.dp
 
 
 @Composable
-fun Slider(name: String, parameterIdx : Int) {
-    val value = remember { mutableStateOf(0f) }
-    val effect = getCurrentEffect()
+fun Slider(name: String, parameterIdx: Int) {
+    val value = remember { mutableStateOf(parameters[parameterIdx]) }
 
-    Box(modifier = Modifier
-        .size(SLIDER_WIDTH, DRAG_AREA_HEIGHT)
-        .pointerInput(Unit) {
-            detectHorizontalDragGestures(onHorizontalDrag = { change, dragAmount ->
-                value.value = (change.position.x.dp / DENSITY / SLIDER_WIDTH).coerceIn(0f, 1f)
-                parameters[parameterIdx] = value.value
-                val mainActivity = MainActivity.getInstance()
-                mainActivity.renderController.renderEffect()
-            })
-        }) {
-
-        SliderBG()
-        SliderFill(value.value)
-        SliderDragHandle(value.value)
-        SliderNameText(name)
-        val valueText = ((value.value - 0.5) * 200).toInt()
-        SliderValueText("$valueText%")
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(DRAG_AREA_HEIGHT)
+    ) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures(onHorizontalDrag = { change, dragAmount ->
+                    value.value = (change.position.x.dp / DENSITY / (maxWidth - DRAG_HANDLE_SIZE)).coerceIn(0f, 1f)
+                    parameters[parameterIdx] = value.value
+                    renderController.renderEffect()
+                })
+            }) {
+            if (showControls.value){
+                value.value = parameters[parameterIdx]
+            }
+            SliderBackground()
+            SliderFill(value.value)
+            SliderDragHandle(value.value)
+            SliderName(name)
+            val valueText = (value.value * 100).toInt()
+            SliderValue("$valueText%")
+        }
     }
 }
 
 @Composable
-fun SliderBG() {
+fun SliderBackground() {
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
-                .size(SLIDER_WIDTH, SLIDER_HEIGHT)
+                .fillMaxWidth()
+                .height(SLIDER_HEIGHT)
                 .align(Alignment.Center)
                 .clip(RoundedCornerShape(20.dp))
                 .background(SliderBG)
@@ -76,16 +79,11 @@ fun SliderBG() {
 
 @Composable
 fun SliderFill(value: Float) {
-    val width = SLIDER_WIDTH * abs(value - 0.5f)
-    var offset = SLIDER_WIDTH / 2
-    if (value < 0.5)
-        offset = SLIDER_WIDTH * value
-
-    Box(modifier = Modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val width = maxWidth * value
         Box(
             modifier = Modifier
                 .size(width, SLIDER_HEIGHT)
-                .offset(offset)
                 .align(Alignment.CenterStart)
                 .clip(RoundedCornerShape(20.dp))
                 .background(SliderFill)
@@ -95,8 +93,9 @@ fun SliderFill(value: Float) {
 
 @Composable
 fun SliderDragHandle(value: Float) {
-    val offset = SLIDER_WIDTH * value - SLIDER_WIDTH / 2
-    Box(modifier = Modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val width = maxWidth - DRAG_HANDLE_SIZE
+        val offset = width * value - width * 0.5f
         Box(
             modifier = Modifier
                 .size(DRAG_HANDLE_SIZE, DRAG_HANDLE_SIZE)
@@ -109,10 +108,11 @@ fun SliderDragHandle(value: Float) {
 }
 
 @Composable
-fun SliderNameText(text: String) {
+fun SliderName(text: String) {
     Box(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = text, modifier = Modifier
+            text = text,
+            modifier = Modifier
                 .size(100.dp, 18.dp)
                 .align(Alignment.CenterStart)
                 .offset(0.dp, -SLIDER_TEXT_OFFSET),
@@ -124,10 +124,11 @@ fun SliderNameText(text: String) {
 }
 
 @Composable
-fun SliderValueText(text: String) {
+fun SliderValue(text: String) {
     Box(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = text, modifier = Modifier
+            text = text,
+            modifier = Modifier
                 .size(100.dp, 18.dp)
                 .align(Alignment.CenterEnd)
                 .offset(0.dp, -SLIDER_TEXT_OFFSET),

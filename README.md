@@ -68,7 +68,7 @@ float valueMapped = mod(value + paramFloat1, 1.0); //rotate and map value to 0,1
 ```c++
 float y1 = paramFloat1; // vertical position 1
 float y2 = paramFloat2; // vertical position 2
-if(currentY > y1 && currentY < y2){ // draw in a rectangle
+if(currentY > y1 && currentY < y2){ //Run shaders in a rectangle
  vec4 colour1 = texture2D(u_Texture, vec2(currentX, y1)); // Obtain colour 1
  vec4 colour2 = texture2D(u_Texture, vec2(currentX, y2)); // Obtain colour 2
  float interpolate = (currentY - y1) / (y2 - y1); // Get interpolation position
@@ -84,7 +84,7 @@ if(currentY > y1 && currentY < y2){ // draw in a rectangle
  ```c++
 float y1 = paramFloat1; // vertical position
 float size = paramFloat2; // height
-if(currentY > y1 && currentY < y1 + size){ // draw in a rectangle
+if(currentY > y1 && currentY < y1 + size){ //Run shaders in a rectangle
  colour = texture2D(u_Texture, vec2(currentX, y1)); // replace pixels
 }
 else{
@@ -115,7 +115,7 @@ float amt = paramFloat1; // Set the amount of distortion
 float size = paramFloat2; // Set the amount of smoothing in the noise
 float xPos = currentX + noise(xy * size); // Calculate new x position
 float yPos = currentY + noise(xy * size); // Calculate new y position
-vec3 colour = texture2D(u_Texture, vec2(xPos, yPos)); // Draw the new pixel value
+vec3 colour = texture2D(u_Texture, vec2(xPos, yPos)); //Run shaders the new pixel value
 ```
  <img width="300px" src="examples/Original.jpg" />  &emsp; <img width="300px" src="examples/9%20Random%20Distort.jpg" />```
 

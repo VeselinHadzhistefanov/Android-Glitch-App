@@ -1,10 +1,10 @@
 precision mediump float;
 
 uniform sampler2D u_Texture;
-
 uniform float paramFloat1;
 uniform float paramFloat2;
-
+uniform float paramFloat3;
+uniform float paramFloat4;
 varying vec3 v_Position;
 varying vec2 v_TexCoordinate;
 
@@ -31,18 +31,15 @@ float noise (vec2 xy) {
 }
 
 void main() {
+    float amt = paramFloat1/16.0;
+    float grain =  paramFloat2 * 50.0 + 5.0;
 
-    float amt = paramFloat1/32.0;
-    float grain =  paramFloat2 * 1000.0 + 10.0;
+    vec2 noiseOffset = vec2(-paramFloat3, paramFloat4);
+    vec2 noisePos = vec2((v_TexCoordinate + noiseOffset - 0.5) * grain);
 
-    vec2 pos = vec2((v_TexCoordinate-0.5)*grain);
+    vec2 noiseMap = vec2(noise(noisePos), noise(noisePos + grain));
+    noiseMap = (noiseMap * 2.0 - 1.0) * amt;
 
-    vec2 xy = vec2(noise(pos), noise(pos + grain));
-    xy = amt*(xy*2.0 - 1.0);
-
-    vec4 textureColor = texture2D(u_Texture, v_TexCoordinate + xy);
-
-
+    vec4 textureColor = texture2D(u_Texture, v_TexCoordinate + noiseMap);
     gl_FragColor = textureColor;
-
 }

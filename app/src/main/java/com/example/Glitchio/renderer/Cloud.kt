@@ -8,15 +8,15 @@ import com.example.Glitchio.R
 import com.example.Glitchio.inputBitmap
 import com.example.Glitchio.parameters
 
-class HueShift(context : Context) : Renderer(context) {
+class Cloud(context: Context) : Renderer(context) {
 
     init {
-        initShaderProgram(vertexShaderPath, R.raw.hue_shift)
+        initShaderProgram(vertexShaderPath, R.raw.cloud)
     }
 
     override fun render(): Bitmap {
         initTextures(inputBitmap.value)
-        setUniformValues(parameters[0])
+        setUniformValues(parameters[0], parameters[1], parameters[2], parameters[3])
 
         //Run shaders
         GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgram, "u_Texture"), 0)

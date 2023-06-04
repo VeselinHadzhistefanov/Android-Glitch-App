@@ -5,14 +5,16 @@ import android.graphics.Bitmap
 import android.opengl.*
 import android.util.Log
 import com.example.Glitchio.R
+import com.example.Glitchio.inputBitmap
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 
+const val vertexShaderPath = R.raw.vertex_shader
 
-abstract class Renderer(val context: Context, val name : String, vararg controlNames : String) {
+abstract class Renderer(val context: Context) {
     var width = 0
     var height = 0
 
@@ -36,10 +38,9 @@ abstract class Renderer(val context: Context, val name : String, vararg controlN
         1.0f, 0f, 1f, 1f
     )
 
-    // Render function implemented by each effect
-    abstract fun render(inputBitmap: Bitmap, parameters : Array<Float>) : Bitmap
+    abstract fun render() : Bitmap
 
-    fun initProgram(vertexShaderPath: Int, fragmentShaderPath: Int) {
+    fun initShaderProgram(vertexShaderPath: Int, fragmentShaderPath: Int) {
         // Create EGL context
         createContext()
         // Create an object to hold data from rendering
@@ -228,5 +229,13 @@ abstract class Renderer(val context: Context, val name : String, vararg controlN
         }
     }
 
+    fun setUniformValues(vararg parameters : Float){
+        for (i in parameters.indices){
+            //Create shader uniform handle
+            val uniformFloatHandle = GLES20.glGetUniformLocation(mProgram, "paramFloat" + (i + 1))
 
+            //Set uniform
+            GLES20.glUniform1f(uniformFloatHandle, parameters[i])
+        }
+    }
 }
