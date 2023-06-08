@@ -3,7 +3,7 @@
 
 ## What is this app for?
 
-With GlitchIO you can apply effects to photos and images and transform then in a creative way. The app offers effects in 3 categories: color manipulation effects, displace effects and digital processign effects.
+With GlitchIO you can apply effects to photos and images and transform then in various creative ways. The app offers effects in 3 categories: color manipulation effects, displace effects and digital processign effects.
 
 
 ## Interface
