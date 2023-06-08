@@ -6,15 +6,11 @@
 With GlitchIO you can apply effects to photos and images and transform then in various creative ways. The app offers effects in 3 categories: color manipulation effects, displace effects and digital processign effects.
 
 
-## Interface
+## User Interface
 
-The interface is divided into several sections to make the navigation and flow easier.
-The top bar allows the user to open and save an image. The user can also apply a ranomized effect by pressing the arrow button on the top.
+The user interface is divided into sections to make the navigation and flow easier.
+The top bar allows the user to open and save images. A ranomized effect can be applied by pressing the arrow button on top.
 The bottom bar allows the user to select an effect and edit the effect using the parameter controls.
-
-<img width="300px" src="examples/Screen1.png" /> &emsp; &emsp; <img width="300px" src="examples/Screen2.png" /> &emsp; &emsp; <img width="300px" src="examples/Screen3.png" /> 
-
-
 
 ## Effects
 
@@ -24,9 +20,9 @@ the RGB values into hue, saturation and value parameters. Transforming these val
 create effects like shifting the hue of the image or focusing on a certain set of colours. 
 
 
-#### Hue Shift
+#### Color Shift
 
-<img width="300px" src="examples/Original.jpg" />  &emsp; <img width="300px" src="examples/1%20Hue%20Shift.jpg" />
+<img width="300px" src="examples/ColorShift1.jpg" />  &emsp; <img width="300px" src="examples/ColorShift2.jpg" />
 
 
 #### Hue Focus
